@@ -12,60 +12,56 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        obsidian: '#0a0b0e',
-                        slateCard: '#12141c',
-                        executiveGold: '#d4af37',
-                        executiveGoldHover: '#b5952f',
-                        emeraldAccent: '#10b981'
+                        orionBg: '#0A1E4D',       /* Azul Marino corporativo */
+                        orionCard: '#0f2966',     /* Tono superior para tarjetas */
+                        orionRoyal: '#135BFF',    /* Azul Rey oficial */
+                        orionCian: '#00E5FF'      /* Cian Eléctrico oficial */
                     }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0A1E4D; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 4px; }
     </style>
 </head>
-<body class="bg-obsidian text-gray-100 min-h-screen flex flex-col pb-24 md:pb-8 transition-colors duration-300">
+<body class="bg-orionBg text-gray-100 min-h-screen flex flex-col pb-24 md:pb-8 transition-colors duration-300">
 
     <!-- Header Ejecutivo -->
-    <header class="bg-slateCard border-b border-gray-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-lg">
+    <header class="bg-orionCard border-b border-blue-900/50 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-xl">
         <div class="flex items-center space-x-3">
-            <!-- Logo Orion Vectorial -->
-            <div class="w-10 h-10 flex items-center justify-center bg-obsidian border border-executiveGold/30 rounded-lg shadow-inner">
-                <svg viewBox="0 0 100 100" class="w-7 h-7 text-executiveGold fill-current">
-                    <path d="M50 5 C50 35 65 50 95 50 C65 50 50 65 50 95 C50 65 35 50 5 50 C35 50 50 35 50 5 Z"/>
+            <!-- Logo Vectorial Exacto según Manual de Identidad Orion -->
+            <div class="w-10 h-10 flex items-center justify-center bg-orionBg border border-orionCian/30 rounded-xl shadow-inner">
+                <svg viewBox="0 0 100 100" class="w-7 h-7 text-orionCian fill-current">
+                    <path d="M50 2 C48 30 30 48 2 50 C30 52 48 70 50 98 C52 70 70 52 98 50 C70 48 52 30 50 2 Z"/>
+                    <path d="M50 25 C49 40 40 49 25 50 C40 51 49 60 50 75 C51 60 60 51 75 50 C60 49 51 40 50 25 Z" class="text-orionRoyal fill-current"/>
                 </svg>
             </div>
             <div>
                 <h1 class="font-bold tracking-widest text-lg text-white flex items-center gap-2">
-                    ORION <span class="text-xs px-2 py-0.5 rounded bg-executiveGold/10 text-executiveGold border border-executiveGold/25 font-normal">ENTERPRISE</span>
+                    ORION <span class="text-xs px-2 py-0.5 rounded bg-orionRoyal/20 text-orionCian border border-orionCian/30 font-normal">ENTERPRISE</span>
                 </h1>
                 <p class="text-xs text-gray-400 flex items-center gap-1.5">
-                    <span id="sync-status" class="inline-block w-2 h-2 rounded-full bg-emeraldAccent animate-pulse"></span> 
-                    <span id="sync-text">Memoria Local Activa</span>
+                    <span class="inline-block w-2 h-2 rounded-full bg-orionCian animate-pulse"></span> 
+                    <span id="sync-text">Sincronización Local Activa</span>
                 </p>
             </div>
         </div>
 
         <!-- Controles Superiores -->
         <div class="flex items-center gap-2 md:gap-3">
-            <button onclick="downloadStatement()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow" title="Descargar Estado de Cuenta">
+            <button onclick="downloadStatement()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-orionCian text-orionBg hover:bg-cyan-400 transition shadow" title="Descargar Estado de Cuenta">
                 <i class="fa-solid fa-file-arrow-down"></i>
                 <span class="hidden sm:inline">Estado de Cuenta</span>
             </button>
             <button onclick="resetData()" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition shadow" title="Reiniciar datos a cero">
                 <i class="fa-solid fa-rotate-right"></i>
-            </button>
-            <button onclick="toggleDarkMode()" id="darkModeBtn" class="p-2 rounded-lg bg-gray-800/60 border border-gray-700 text-executiveGold hover:bg-gray-700 transition" title="Cambiar Tema">
-                <i class="fa-solid fa-moon"></i>
             </button>
         </div>
     </header>
@@ -75,37 +71,37 @@
 
         <!-- Tarjetas KPI / Resumen Ejecutivo -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
-                <p class="text-xs text-gray-400 font-medium">Ingresos Totales</p>
+            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-300 font-medium">Ingresos Totales</p>
                 <h3 id="kpi-ingresos" class="text-xl md:text-2xl font-bold text-white mt-1">$0.00</h3>
                 <span class="text-[10px] text-emerald-400 mt-1 block"><i class="fa-solid fa-arrow-trend-up"></i> Registrados</span>
             </div>
-            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
-                <p class="text-xs text-gray-400 font-medium">Gastos / Deudas</p>
+            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-300 font-medium">Gastos / Deudas</p>
                 <h3 id="kpi-gastos" class="text-xl md:text-2xl font-bold text-red-400 mt-1">$0.00</h3>
-                <span class="text-[10px] text-gray-400 mt-1 block"><i class="fa-solid fa-wallet"></i> Comprometido</span>
+                <span class="text-[10px] text-gray-300 mt-1 block"><i class="fa-solid fa-wallet"></i> Comprometido</span>
             </div>
-            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
-                <p class="text-xs text-gray-400 font-medium">Efectivo Libre</p>
-                <h3 id="kpi-libre" class="text-xl md:text-2xl font-bold text-executiveGold mt-1">$0.00</h3>
-                <span class="text-[10px] text-executiveGold/80 mt-1 block"><i class="fa-solid fa-scale-balanced"></i> Margen actual</span>
+            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-300 font-medium">Efectivo Libre</p>
+                <h3 id="kpi-libre" class="text-xl md:text-2xl font-bold text-orionCian mt-1">$0.00</h3>
+                <span class="text-[10px] text-orionCian/80 mt-1 block"><i class="fa-solid fa-scale-balanced"></i> Margen actual</span>
             </div>
-            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
-                <p class="text-xs text-gray-400 font-medium">Salud Financiera</p>
-                <h3 id="kpi-salud" class="text-lg md:text-xl font-bold text-gray-400 mt-1">Sin datos</h3>
-                <span id="kpi-salud-desc" class="text-[10px] text-gray-400 mt-1 block">Agrega movimientos</span>
+            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-300 font-medium">Salud Financiera</p>
+                <h3 id="kpi-salud" class="text-lg md:text-xl font-bold text-gray-300 mt-1">Sin datos</h3>
+                <span id="kpi-salud-desc" class="text-[10px] text-gray-300 mt-1 block">Agrega movimientos</span>
             </div>
         </div>
 
         <!-- Pestañas de Navegación del Plazo -->
-        <div class="flex border-b border-gray-800 overflow-x-auto custom-scrollbar">
-            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-5 py-3 text-sm font-semibold border-b-2 border-executiveGold text-executiveGold whitespace-nowrap transition">
+        <div class="flex border-b border-blue-900/50 overflow-x-auto custom-scrollbar">
+            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-5 py-3 text-sm font-semibold border-b-2 border-orionCian text-orionCian whitespace-nowrap transition">
                 <i class="fa-solid fa-chart-pie mr-2"></i> Dashboard General
             </button>
-            <button onclick="switchTab('quincena1')" id="tab-btn-quincena1" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white whitespace-nowrap transition">
+            <button onclick="switchTab('quincena1')" id="tab-btn-quincena1" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-300 hover:text-white whitespace-nowrap transition">
                 <i class="fa-solid fa-calendar-day mr-2"></i> Del 01 al 15
             </button>
-            <button onclick="switchTab('quincena2')" id="tab-btn-quincena2" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white whitespace-nowrap transition">
+            <button onclick="switchTab('quincena2')" id="tab-btn-quincena2" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-300 hover:text-white whitespace-nowrap transition">
                 <i class="fa-solid fa-calendar-days mr-2"></i> Del 16 al 30/31
             </button>
         </div>
@@ -114,23 +110,23 @@
         <div id="tab-dashboard" class="space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Gráfica de Distribución -->
-                <div class="bg-slateCard border border-gray-800 p-5 rounded-2xl shadow">
-                    <h3 class="text-sm font-bold tracking-wider text-gray-300 uppercase mb-4"><i class="fa-solid fa-chart-pie text-executiveGold mr-2"></i> Distribución de Gastos</h3>
+                <div class="bg-orionCard border border-blue-900/40 p-5 rounded-2xl shadow-lg">
+                    <h3 class="text-sm font-bold tracking-wider text-gray-200 uppercase mb-4"><i class="fa-solid fa-chart-pie text-orionCian mr-2"></i> Distribución de Gastos</h3>
                     <div class="relative h-64 flex items-center justify-center">
                         <canvas id="expenseChart"></canvas>
                     </div>
                 </div>
                 <!-- Diagnóstico Ejecutivo -->
-                <div class="bg-slateCard border border-gray-800 p-5 rounded-2xl shadow flex flex-col justify-between">
+                <div class="bg-orionCard border border-blue-900/40 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
                     <div>
-                        <h3 class="text-sm font-bold tracking-wider text-gray-300 uppercase mb-4"><i class="fa-solid fa-shield-halved text-executiveGold mr-2"></i> Diagnóstico de Liquidez</h3>
+                        <h3 class="text-sm font-bold tracking-wider text-gray-200 uppercase mb-4"><i class="fa-solid fa-shield-halved text-orionCian mr-2"></i> Diagnóstico de Liquidez</h3>
                         <div id="executive-summary-text" class="space-y-3 text-sm text-gray-300">
                             <p>Sin registros para analizar. Agrega ingresos y gastos en las pestañas de plazos.</p>
                         </div>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-gray-800/80 flex justify-between items-center text-xs text-gray-400">
+                    <div class="mt-6 pt-4 border-t border-blue-900/40 flex justify-between items-center text-xs text-gray-400">
                         <span>Estrategia: Cero Fugas</span>
-                        <span class="text-executiveGold font-semibold">Orion Protocol</span>
+                        <span class="text-orionCian font-semibold">Orion Protocol</span>
                     </div>
                 </div>
             </div>
@@ -139,16 +135,16 @@
         <!-- SECCIÓN: PLAZO 1 (Del 01 al 15) -->
         <div id="tab-quincena1" class="space-y-6 hidden">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-day text-executiveGold mr-2"></i> Plazo: Del 01 al 15</h2>
-                <button onclick="openModal('q1')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow">
+                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-day text-orionCian mr-2"></i> Plazo: Del 01 al 15</h2>
+                <button onclick="openModal('q1')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-orionCian text-orionBg hover:bg-cyan-400 transition shadow">
                     <i class="fa-solid fa-plus mr-1"></i> Agregar Movimiento
                 </button>
             </div>
             <!-- Tabla -->
-            <div class="bg-slateCard border border-gray-800 rounded-xl overflow-hidden shadow">
+            <div class="bg-orionCard border border-blue-900/40 rounded-xl overflow-hidden shadow-lg">
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-obsidian/60 text-gray-400 border-b border-gray-800 text-xs uppercase">
+                        <thead class="bg-orionBg/80 text-gray-300 border-b border-blue-900/40 text-xs uppercase">
                             <tr>
                                 <th class="p-3">Estado</th>
                                 <th class="p-3">Concepto</th>
@@ -158,7 +154,7 @@
                                 <th class="p-3 text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="table-q1" class="divide-y divide-gray-800/60">
+                        <tbody id="table-q1" class="divide-y divide-blue-900/30">
                             <!-- Dinámico -->
                         </tbody>
                     </table>
@@ -169,16 +165,16 @@
         <!-- SECCIÓN: PLAZO 2 (Del 16 al 30/31) -->
         <div id="tab-quincena2" class="space-y-6 hidden">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-days text-executiveGold mr-2"></i> Plazo: Del 16 al 30/31</h2>
-                <button onclick="openModal('q2')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow">
+                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-days text-orionCian mr-2"></i> Plazo: Del 16 al 30/31</h2>
+                <button onclick="openModal('q2')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-orionCian text-orionBg hover:bg-cyan-400 transition shadow">
                     <i class="fa-solid fa-plus mr-1"></i> Agregar Movimiento
                 </button>
             </div>
             <!-- Tabla -->
-            <div class="bg-slateCard border border-gray-800 rounded-xl overflow-hidden shadow">
+            <div class="bg-orionCard border border-blue-900/40 rounded-xl overflow-hidden shadow-lg">
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-obsidian/60 text-gray-400 border-b border-gray-800 text-xs uppercase">
+                        <thead class="bg-orionBg/80 text-gray-300 border-b border-blue-900/40 text-xs uppercase">
                             <tr>
                                 <th class="p-3">Estado</th>
                                 <th class="p-3">Concepto</th>
@@ -188,7 +184,7 @@
                                 <th class="p-3 text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="table-q2" class="divide-y divide-gray-800/60">
+                        <tbody id="table-q2" class="divide-y divide-blue-900/30">
                             <!-- Dinámico -->
                         </tbody>
                     </table>
@@ -199,8 +195,8 @@
     </main>
 
     <!-- Barra de Navegación Móvil Inferior -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slateCard border-t border-gray-800 px-4 py-3 flex justify-around items-center z-50">
-        <button onclick="switchTab('dashboard')" id="mob-btn-dashboard" class="flex flex-col items-center text-executiveGold text-xs font-medium">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-orionCard border-t border-blue-900/50 px-4 py-3 flex justify-around items-center z-50 shadow-2xl">
+        <button onclick="switchTab('dashboard')" id="mob-btn-dashboard" class="flex flex-col items-center text-orionCian text-xs font-medium">
             <i class="fa-solid fa-chart-pie text-base mb-1"></i> Dashboard
         </button>
         <button onclick="switchTab('quincena1')" id="mob-btn-quincena1" class="flex flex-col items-center text-gray-400 text-xs font-medium">
@@ -209,42 +205,42 @@
         <button onclick="switchTab('quincena2')" id="mob-btn-quincena2" class="flex flex-col items-center text-gray-400 text-xs font-medium">
             <i class="fa-solid fa-calendar-days text-base mb-1"></i> 16 al 31
         </button>
-        <button onclick="openModal('current')" class="flex flex-col items-center text-executiveGold text-xs font-medium">
+        <button onclick="openModal('current')" class="flex flex-col items-center text-orionCian text-xs font-medium">
             <i class="fa-solid fa-circle-plus text-base mb-1"></i> Nuevo
         </button>
     </nav>
 
     <!-- Modal para Nuevo Movimiento -->
-    <div id="movementModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slateCard border border-gray-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+    <div id="movementModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-orionCard border border-blue-900/60 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-blue-900/40 pb-3">
                 <h3 class="font-bold text-white text-base">Registrar Nuevo Movimiento</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="movementForm" onsubmit="saveMovement(event)" class="space-y-4 text-sm">
                 <input type="hidden" id="form-periodo" value="q1">
                 <div>
-                    <label class="block text-gray-400 text-xs mb-1">Plazo</label>
-                    <select id="input-periodo" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                    <label class="block text-gray-300 text-xs mb-1">Plazo</label>
+                    <select id="input-periodo" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                         <option value="q1">Del 01 al 15</option>
                         <option value="q2">Del 16 al 30/31</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-gray-400 text-xs mb-1">Tipo</label>
-                    <select id="input-tipo" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                    <label class="block text-gray-300 text-xs mb-1">Tipo</label>
+                    <select id="input-tipo" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                         <option value="ingreso">Ingreso (Sueldo / Extra)</option>
                         <option value="gasto">Gasto / Deuda</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-gray-400 text-xs mb-1">Concepto</label>
-                    <input type="text" id="input-concepto" required placeholder="Ej. Nómina Coppel, Renta, Préstamo..." class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                    <label class="block text-gray-300 text-xs mb-1">Concepto</label>
+                    <input type="text" id="input-concepto" required placeholder="Ej. Nómina, Renta, Préstamo..." class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-gray-400 text-xs mb-1">Categoría</label>
-                        <select id="input-categoria" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                        <label class="block text-gray-300 text-xs mb-1">Categoría</label>
+                        <select id="input-categoria" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                             <option value="Nómina">Nómina</option>
                             <option value="Deudas">Deudas</option>
                             <option value="Vivienda/Servicios">Vivienda/Servicios</option>
@@ -253,13 +249,13 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-gray-400 text-xs mb-1">Monto ($)</label>
-                        <input type="number" step="0.01" id="input-monto" required placeholder="0.00" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                        <label class="block text-gray-300 text-xs mb-1">Monto ($)</label>
+                        <input type="number" step="0.01" id="input-monto" required placeholder="0.00" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-executiveGold text-obsidian font-semibold hover:bg-executiveGoldHover">Guardar Registro</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-blue-950 text-gray-300 hover:bg-blue-900">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-orionCian text-orionBg font-semibold hover:bg-cyan-400">Guardar Registro</button>
                 </div>
             </form>
         </div>
@@ -267,11 +263,7 @@
 
     <!-- Lógica de la Aplicación -->
     <script>
-        let db = {
-            q1: [],
-            q2: []
-        };
-
+        let db = { q1: [], q2: [] };
         let activeTab = 'dashboard';
         let expenseChartInstance = null;
 
@@ -289,13 +281,12 @@
         }
 
         function resetData() {
-            if (confirm("¿Estás seguro de que deseas reiniciar todos los datos a cero? Esta acción no se puede deshacer.")) {
+            if (confirm("¿Estás seguro de que deseas reiniciar todos los datos a cero?")) {
                 db = { q1: [], q2: [] };
                 saveData();
             }
         }
 
-        // Función para generar y descargar el Estado de Cuenta Ejecutivo en HTML/Documento
         function downloadStatement() {
             let totalIngresos = 0;
             let totalGastos = 0;
@@ -316,8 +307,8 @@
                 <title>Estado de Cuenta - Orion Enterprise</title>
                 <style>
                     body { font-family: Arial, sans-serif; color: #111; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.5; }
-                    .header { border-bottom: 2px solid #d4af37; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-                    .title { font-size: 22px; font-weight: bold; color: #0a0b0e; letter-spacing: 2px; }
+                    .header { border-bottom: 2px solid #00E5FF; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+                    .title { font-size: 22px; font-weight: bold; color: #0A1E4D; letter-spacing: 2px; }
                     .subtitle { font-size: 12px; color: #555; }
                     .kpi-container { display: flex; gap: 15px; margin-bottom: 25px; }
                     .kpi-card { background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; flex: 1; text-align: center; }
@@ -325,7 +316,7 @@
                     .kpi-value { font-size: 18px; font-weight: bold; margin-top: 5px; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
                     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-                    th { background-color: #0a0b0e; color: #fff; font-size: 11px; text-transform: uppercase; }
+                    th { background-color: #0A1E4D; color: #fff; font-size: 11px; text-transform: uppercase; }
                     .text-right { text-align: right; }
                     .badge-ingreso { color: #059669; font-weight: bold; }
                     .badge-gasto { color: #dc2626; font-weight: bold; }
@@ -354,7 +345,7 @@
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-title">Efectivo Libre</div>
-                        <div class="kpi-value" style="color: #b5952f;">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+                        <div class="kpi-value" style="color: #135BFF;">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
                     </div>
                 </div>
 
@@ -449,21 +440,21 @@
                 document.getElementById(`tab-${t}`).classList.add('hidden');
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if(btn) {
-                    btn.classList.remove('border-executiveGold', 'text-executiveGold');
-                    btn.classList.add('border-transparent', 'text-gray-400');
+                    btn.classList.remove('border-orionCian', 'text-orionCian');
+                    btn.classList.add('border-transparent', 'text-gray-300');
                 }
                 const mobBtn = document.getElementById(`mob-btn-${t}`);
-                if(mobBtn) mobBtn.classList.replace('text-executiveGold', 'text-gray-400');
+                if(mobBtn) mobBtn.classList.replace('text-orionCian', 'text-gray-400');
             });
 
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-btn-${tab}`);
             if(activeBtn) {
-                activeBtn.classList.add('border-executiveGold', 'text-executiveGold');
-                activeBtn.classList.remove('border-transparent', 'text-gray-400');
+                activeBtn.classList.add('border-orionCian', 'text-orionCian');
+                activeBtn.classList.remove('border-transparent', 'text-gray-300');
             }
             const activeMob = document.getElementById(`mob-btn-${tab}`);
-            if(activeMob) activeMob.classList.replace('text-gray-400', 'text-executiveGold');
+            if(activeMob) activeMob.classList.replace('text-gray-400', 'text-orionCian');
         }
 
         function openModal(periodo) {
@@ -488,15 +479,7 @@
             const categoria = document.getElementById('input-categoria').value;
             const monto = parseFloat(document.getElementById('input-monto').value) || 0;
 
-            const newItem = {
-                id: Date.now(),
-                concepto,
-                categoria,
-                tipo,
-                monto,
-                pagado: false
-            };
-
+            const newItem = { id: Date.now(), concepto, categoria, tipo, monto, pagado: false };
             db[periodo].push(newItem);
             saveData();
             closeModal();
@@ -521,21 +504,17 @@
                 tbody.innerHTML = '';
 
                 if (db[p].length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="p-4 text-center text-gray-500 text-xs">Sin registros agregados en este plazo.</td>
-                        </tr>
-                    `;
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 text-xs">Sin registros agregados en este plazo.</td></tr>`;
                 } else {
                     db[p].forEach(item => {
                         const tr = document.createElement('tr');
-                        tr.className = "hover:bg-gray-800/40 transition";
+                        tr.className = "hover:bg-blue-900/20 transition";
                         tr.innerHTML = `
                             <td class="p-3">
-                                <input type="checkbox" ${item.pagado ? 'checked' : ''} onchange="togglePagado('${p}', ${item.id})" class="w-4 h-4 accent-executiveGold rounded cursor-pointer">
+                                <input type="checkbox" ${item.pagado ? 'checked' : ''} onchange="togglePagado('${p}', ${item.id})" class="w-4 h-4 accent-orionCian rounded cursor-pointer">
                             </td>
                             <td class="p-3 font-medium text-white">${item.concepto}</td>
-                            <td class="p-3 text-gray-400 text-xs">${item.categoria}</td>
+                            <td class="p-3 text-gray-300 text-xs">${item.categoria}</td>
                             <td class="p-3">
                                 <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${item.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
                                     ${item.tipo.toUpperCase()}
@@ -545,7 +524,7 @@
                                 $${item.monto.toLocaleString('es-MX', {minimumFractionDigits: 2})}
                             </td>
                             <td class="p-3 text-center">
-                                <button onclick="deleteItem('${p}', ${item.id})" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                                <button onclick="deleteItem('${p}', ${item.id})" class="text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -577,10 +556,10 @@
             } else if(efectivoLibre > 5000) {
                 saludEl.innerText = "Óptima";
                 saludEl.className = "text-lg md:text-xl font-bold text-emerald-400 mt-1";
-                saludDesc.innerText = "Margen de maniobra amplio";
+                saludDesc.innerText = "Margen amplio";
             } else if(efectivoLibre >= 0) {
                 saludEl.innerText = "Estable";
-                saludEl.className = "text-lg md:text-xl font-bold text-executiveGold mt-1";
+                saludEl.className = "text-lg md:text-xl font-bold text-orionCian mt-1";
                 saludDesc.innerText = "Equilibrio ajustado";
             } else {
                 saludEl.innerText = "Crítica";
@@ -589,13 +568,11 @@
             }
 
             if (totalIngresos === 0 && totalGastos === 0) {
-                document.getElementById('executive-summary-text').innerHTML = `
-                    <p>Sin registros para analizar. Agrega tus primeros ingresos y gastos usando el botón <strong>"Agregar Movimiento"</strong> o el botón <strong>"+"</strong> en dispositivos móviles.</p>
-                `;
+                document.getElementById('executive-summary-text').innerHTML = `<p>Sin registros para analizar. Agrega tus primeros ingresos y gastos usando los botones de plazos.</p>`;
             } else {
                 document.getElementById('executive-summary-text').innerHTML = `
-                    <p>Gestión centralizada para <strong>Orion Enterprise</strong>. Actualmente tus compromisos representan el <strong>${totalIngresos > 0 ? Math.round((totalGastos/totalIngresos)*100) : 0}%</strong> de tus ingresos globales.</p>
-                    <p>El remanente estimado al finalizar los plazos es de <strong class="text-executiveGold">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong> líquidos.</p>
+                    <p>Gestión centralizada para <strong>Orion Enterprise</strong>. Tus compromisos representan el <strong>${totalIngresos > 0 ? Math.round((totalGastos/totalIngresos)*100) : 0}%</strong> de tus ingresos.</p>
+                    <p>Remanente estimado: <strong class="text-orionCian">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong> líquidos.</p>
                 `;
             }
 
@@ -622,7 +599,7 @@
                     labels: labels.length ? labels : ['Sin Gastos'],
                     datasets: [{
                         data: data.length ? data : [1],
-                        backgroundColor: data.length ? ['#d4af37', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#6b7280'] : ['#1f2937'],
+                        backgroundColor: data.length ? ['#00E5FF', '#135BFF', '#3b82f6', '#ef4444', '#8b5cf6', '#6b7280'] : ['#0f2966'],
                         borderWidth: 0
                     }]
                 },
@@ -634,10 +611,6 @@
                     }
                 }
             });
-        }
-
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
         }
 
         loadData();
