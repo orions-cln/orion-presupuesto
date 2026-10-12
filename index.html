@@ -50,18 +50,22 @@
                 </h1>
                 <p class="text-xs text-gray-400 flex items-center gap-1.5">
                     <span id="sync-status" class="inline-block w-2 h-2 rounded-full bg-emeraldAccent animate-pulse"></span> 
-                    <span id="sync-text">Sincronizado en la nube</span>
+                    <span id="sync-text">Memoria Local Activa</span>
                 </p>
             </div>
         </div>
 
         <!-- Controles Superiores -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 md:gap-3">
+            <button onclick="downloadStatement()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow" title="Descargar Estado de Cuenta">
+                <i class="fa-solid fa-file-arrow-down"></i>
+                <span class="hidden sm:inline">Estado de Cuenta</span>
+            </button>
+            <button onclick="resetData()" class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition shadow" title="Reiniciar datos a cero">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
             <button onclick="toggleDarkMode()" id="darkModeBtn" class="p-2 rounded-lg bg-gray-800/60 border border-gray-700 text-executiveGold hover:bg-gray-700 transition" title="Cambiar Tema">
                 <i class="fa-solid fa-moon"></i>
-            </button>
-            <button onclick="exportData()" class="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow">
-                <i class="fa-solid fa-cloud-arrow-down"></i> Exportar
             </button>
         </div>
     </header>
@@ -74,7 +78,7 @@
             <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
                 <p class="text-xs text-gray-400 font-medium">Ingresos Totales</p>
                 <h3 id="kpi-ingresos" class="text-xl md:text-2xl font-bold text-white mt-1">$0.00</h3>
-                <span class="text-[10px] text-emerald-400 mt-1 block"><i class="fa-solid fa-arrow-trend-up"></i> Proyectado</span>
+                <span class="text-[10px] text-emerald-400 mt-1 block"><i class="fa-solid fa-arrow-trend-up"></i> Registrados</span>
             </div>
             <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
                 <p class="text-xs text-gray-400 font-medium">Gastos / Deudas</p>
@@ -88,8 +92,8 @@
             </div>
             <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
                 <p class="text-xs text-gray-400 font-medium">Salud Financiera</p>
-                <h3 id="kpi-salud" class="text-lg md:text-xl font-bold text-emerald-400 mt-1">Óptima</h3>
-                <span id="kpi-salud-desc" class="text-[10px] text-gray-400 mt-1 block">Margen seguro</span>
+                <h3 id="kpi-salud" class="text-lg md:text-xl font-bold text-gray-400 mt-1">Sin datos</h3>
+                <span id="kpi-salud-desc" class="text-[10px] text-gray-400 mt-1 block">Agrega movimientos</span>
             </div>
         </div>
 
@@ -121,7 +125,7 @@
                     <div>
                         <h3 class="text-sm font-bold tracking-wider text-gray-300 uppercase mb-4"><i class="fa-solid fa-shield-halved text-executiveGold mr-2"></i> Diagnóstico de Liquidez</h3>
                         <div id="executive-summary-text" class="space-y-3 text-sm text-gray-300">
-                            <p>Cargando análisis financiero inteligente...</p>
+                            <p>Sin registros para analizar. Agrega ingresos y gastos en las pestañas de plazos.</p>
                         </div>
                     </div>
                     <div class="mt-6 pt-4 border-t border-gray-800/80 flex justify-between items-center text-xs text-gray-400">
@@ -264,22 +268,13 @@
     <!-- Lógica de la Aplicación -->
     <script>
         let db = {
-            q1: [
-                { id: 1, concepto: "Sueldo Quincenal", categoria: "Nómina", tipo: "ingreso", monto: 8500, pagado: true },
-                { id: 2, concepto: "Tarjeta de Crédito", categoria: "Deudas", tipo: "gasto", monto: 2500, pagado: false },
-                { id: 3, concepto: "Renta Departamento", categoria: "Vivienda/Servicios", tipo: "gasto", monto: 3500, pagado: false }
-            ],
-            q2: [
-                { id: 4, concepto: "Sueldo Quincenal", categoria: "Nómina", tipo: "ingreso", monto: 8500, pagado: false },
-                { id: 5, concepto: "Préstamo BanCoppel", categoria: "Deudas", tipo: "gasto", monto: 2000, pagado: false },
-                { id: 6, concepto: "Supermercado / Alimentos", categoria: "Alimentos", tipo: "gasto", monto: 2500, pagado: false }
-            ]
+            q1: [],
+            q2: []
         };
 
         let activeTab = 'dashboard';
         let expenseChartInstance = null;
 
-        // Sincronización Local / Nube simulada y persistente en LocalStorage
         function saveData() {
             localStorage.setItem('orion_finances_data', JSON.stringify(db));
             updateUI();
@@ -291,6 +286,161 @@
                 try { db = JSON.parse(saved); } catch(e) {}
             }
             updateUI();
+        }
+
+        function resetData() {
+            if (confirm("¿Estás seguro de que deseas reiniciar todos los datos a cero? Esta acción no se puede deshacer.")) {
+                db = { q1: [], q2: [] };
+                saveData();
+            }
+        }
+
+        // Función para generar y descargar el Estado de Cuenta Ejecutivo en HTML/Documento
+        function downloadStatement() {
+            let totalIngresos = 0;
+            let totalGastos = 0;
+            ['q1', 'q2'].forEach(p => {
+                db[p].forEach(i => {
+                    if(i.tipo === 'ingreso') totalIngresos += i.monto;
+                    else totalGastos += i.monto;
+                });
+            });
+            const efectivoLibre = totalIngresos - totalGastos;
+            const fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            let htmlContent = `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>Estado de Cuenta - Orion Enterprise</title>
+                <style>
+                    body { font-family: Arial, sans-serif; color: #111; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.5; }
+                    .header { border-bottom: 2px solid #d4af37; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+                    .title { font-size: 22px; font-weight: bold; color: #0a0b0e; letter-spacing: 2px; }
+                    .subtitle { font-size: 12px; color: #555; }
+                    .kpi-container { display: flex; gap: 15px; margin-bottom: 25px; }
+                    .kpi-card { background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; flex: 1; text-align: center; }
+                    .kpi-title { font-size: 11px; color: #666; text-transform: uppercase; }
+                    .kpi-value { font-size: 18px; font-weight: bold; margin-top: 5px; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
+                    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                    th { background-color: #0a0b0e; color: #fff; font-size: 11px; text-transform: uppercase; }
+                    .text-right { text-align: right; }
+                    .badge-ingreso { color: #059669; font-weight: bold; }
+                    .badge-gasto { color: #dc2626; font-weight: bold; }
+                    .footer { text-align: center; font-size: 11px; color: #771; border-top: 1px solid #eee; padding-top: 15px; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <div class="title">ORION ENTERPRISE</div>
+                        <div class="subtitle">Estado de Cuenta y Resumen de Liquidez Financiera</div>
+                    </div>
+                    <div style="text-align: right; font-size: 12px; color: #555;">
+                        Fecha de emisión: <strong>${fechaActual}</strong>
+                    </div>
+                </div>
+
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Ingresos Totales</div>
+                        <div class="kpi-value" style="color: #059669;">$${totalIngresos.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Gastos / Deudas</div>
+                        <div class="kpi-value" style="color: #dc2626;">$${totalGastos.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Efectivo Libre</div>
+                        <div class="kpi-value" style="color: #b5952f;">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+                    </div>
+                </div>
+
+                <h3>Plazo: Del 01 al 15</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Estatus</th>
+                            <th>Concepto</th>
+                            <th>Categoría</th>
+                            <th>Tipo</th>
+                            <th class="text-right">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if(db.q1.length === 0) {
+                htmlContent += `<tr><td colspan="5" style="text-align: center; color: #777;">Sin registros en este plazo.</td></tr>`;
+            } else {
+                db.q1.forEach(i => {
+                    htmlContent += `
+                        <tr>
+                            <td>${i.pagado ? 'Pagado / Recibido' : 'Pendiente'}</td>
+                            <td>${i.concepto}</td>
+                            <td>${i.categoria}</td>
+                            <td>${i.tipo.toUpperCase()}</td>
+                            <td class="text-right ${i.tipo === 'ingreso' ? 'badge-ingreso' : 'badge-gasto'}">$${i.monto.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            htmlContent += `
+                    </tbody>
+                </table>
+
+                <h3>Plazo: Del 16 al 30/31</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Estatus</th>
+                            <th>Concepto</th>
+                            <th>Categoría</th>
+                            <th>Tipo</th>
+                            <th class="text-right">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if(db.q2.length === 0) {
+                htmlContent += `<tr><td colspan="5" style="text-align: center; color: #777;">Sin registros en este plazo.</td></tr>`;
+            } else {
+                db.q2.forEach(i => {
+                    htmlContent += `
+                        <tr>
+                            <td>${i.pagado ? 'Pagado / Recibido' : 'Pendiente'}</td>
+                            <td>${i.concepto}</td>
+                            <td>${i.categoria}</td>
+                            <td>${i.tipo.toUpperCase()}</td>
+                            <td class="text-right ${i.tipo === 'ingreso' ? 'badge-ingreso' : 'badge-gasto'}">$${i.monto.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            htmlContent += `
+                    </tbody>
+                </table>
+
+                <div class="footer">
+                    Orion Enterprise Financial System &bull; Reporte generado automáticamente para control ejecutivo.
+                </div>
+            </body>
+            </html>
+            `;
+
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.href = url;
+            downloadAnchor.download = `Estado_de_Cuenta_Orion_${new Date().toISOString().slice(0,10)}.html`;
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         }
 
         function switchTab(tab) {
@@ -366,36 +516,43 @@
         }
 
         function updateUI() {
-            // Renderizar tablas
             ['q1', 'q2'].forEach(p => {
                 const tbody = document.getElementById(`table-${p}`);
                 tbody.innerHTML = '';
-                db[p].forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-gray-800/40 transition";
-                    tr.innerHTML = `
-                        <td class="p-3">
-                            <input type="checkbox" ${item.pagado ? 'checked' : ''} onchange="togglePagado('${p}', ${item.id})" class="w-4 h-4 accent-executiveGold rounded cursor-pointer">
-                        </td>
-                        <td class="p-3 font-medium text-white">${item.concepto}</td>
-                        <td class="p-3 text-gray-400 text-xs">${item.categoria}</td>
-                        <td class="p-3">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${item.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
-                                ${item.tipo.toUpperCase()}
-                            </span>
-                        </td>
-                        <td class="p-3 text-right font-bold ${item.tipo === 'ingreso' ? 'text-emerald-400' : 'text-white'}">
-                            $${item.monto.toLocaleString('es-MX', {minimumFractionDigits: 2})}
-                        </td>
-                        <td class="p-3 text-center">
-                            <button onclick="deleteItem('${p}', ${item.id})" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
-                        </td>
+
+                if (db[p].length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="p-4 text-center text-gray-500 text-xs">Sin registros agregados en este plazo.</td>
+                        </tr>
                     `;
-                    tbody.appendChild(tr);
-                });
+                } else {
+                    db[p].forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-gray-800/40 transition";
+                        tr.innerHTML = `
+                            <td class="p-3">
+                                <input type="checkbox" ${item.pagado ? 'checked' : ''} onchange="togglePagado('${p}', ${item.id})" class="w-4 h-4 accent-executiveGold rounded cursor-pointer">
+                            </td>
+                            <td class="p-3 font-medium text-white">${item.concepto}</td>
+                            <td class="p-3 text-gray-400 text-xs">${item.categoria}</td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${item.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
+                                    ${item.tipo.toUpperCase()}
+                                </span>
+                            </td>
+                            <td class="p-3 text-right font-bold ${item.tipo === 'ingreso' ? 'text-emerald-400' : 'text-white'}">
+                                $${item.monto.toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                            </td>
+                            <td class="p-3 text-center">
+                                <button onclick="deleteItem('${p}', ${item.id})" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
             });
 
-            // Calcular KPIs
             let totalIngresos = 0;
             let totalGastos = 0;
             ['q1', 'q2'].forEach(p => {
@@ -412,7 +569,12 @@
 
             const saludEl = document.getElementById('kpi-salud');
             const saludDesc = document.getElementById('kpi-salud-desc');
-            if(efectivoLibre > 5000) {
+
+            if (totalIngresos === 0 && totalGastos === 0) {
+                saludEl.innerText = "Sin datos";
+                saludEl.className = "text-lg md:text-xl font-bold text-gray-400 mt-1";
+                saludDesc.innerText = "Agrega movimientos";
+            } else if(efectivoLibre > 5000) {
                 saludEl.innerText = "Óptima";
                 saludEl.className = "text-lg md:text-xl font-bold text-emerald-400 mt-1";
                 saludDesc.innerText = "Margen de maniobra amplio";
@@ -426,11 +588,16 @@
                 saludDesc.innerText = "Déficit proyectado";
             }
 
-            // Resumen Ejecutivo Text
-            document.getElementById('executive-summary-text').innerHTML = `
-                <p>Gestión centralizada para <strong>Orion Enterprise</strong>. Actualmente tus compromisos representan el <strong>${totalIngresos > 0 ? Math.round((totalGastos/totalIngresos)*100) : 0}%</strong> de tus ingresos globales.</p>
-                <p>El remanente estimado al finalizar los plazos es de <strong class="text-executiveGold">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong> líquidos.</p>
-            `;
+            if (totalIngresos === 0 && totalGastos === 0) {
+                document.getElementById('executive-summary-text').innerHTML = `
+                    <p>Sin registros para analizar. Agrega tus primeros ingresos y gastos usando el botón <strong>"Agregar Movimiento"</strong> o el botón <strong>"+"</strong> en dispositivos móviles.</p>
+                `;
+            } else {
+                document.getElementById('executive-summary-text').innerHTML = `
+                    <p>Gestión centralizada para <strong>Orion Enterprise</strong>. Actualmente tus compromisos representan el <strong>${totalIngresos > 0 ? Math.round((totalGastos/totalIngresos)*100) : 0}%</strong> de tus ingresos globales.</p>
+                    <p>El remanente estimado al finalizar los plazos es de <strong class="text-executiveGold">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong> líquidos.</p>
+                `;
+            }
 
             updateChart();
         }
@@ -455,7 +622,7 @@
                     labels: labels.length ? labels : ['Sin Gastos'],
                     datasets: [{
                         data: data.length ? data : [1],
-                        backgroundColor: ['#d4af37', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#6b7280'],
+                        backgroundColor: data.length ? ['#d4af37', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#6b7280'] : ['#1f2937'],
                         borderWidth: 0
                     }]
                 },
@@ -464,7 +631,7 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { position: 'bottom', labels: { color: '#9ca3af', font: { size: 11 } } }
-                  }
+                    }
                 }
             });
         }
@@ -473,17 +640,6 @@
             document.documentElement.classList.toggle('dark');
         }
 
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "orion_presupuesto.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        // Inicializar
         loadData();
     </script>
 </body>
