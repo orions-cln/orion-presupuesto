@@ -1,924 +1,490 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION Financial - Gestor Ejecutivo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion | Executive Financial Intelligence</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#f4f5f7',
-                            100: '#e4e7eb',
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#030712'
-                        },
-                        gold: {
-                            400: '#fbbf24',
-                            500: '#f59e0b',
-                            600: '#d97706',
-                        }
+                        obsidian: '#0a0b0e',
+                        slateCard: '#12141c',
+                        executiveGold: '#d4af37',
+                        executiveGoldHover: '#b5952f',
+                        emeraldAccent: '#10b981'
                     }
                 }
             }
         }
     </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
-        
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            transition: background-color 0.3s ease, color 0.3s ease;
-            touch-action: manipulation;
-            overscroll-behavior-y: none;
-        }
-        
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Glassmorphism & High-End Card styling */
-        .exec-card {
-            transition: all 0.2s ease-in-out;
-        }
-        .dark .exec-card {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-        }
-        .light .exec-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
-        }
-
-        .sheet-grid input, .sheet-grid select {
-            background: transparent;
-            border: none;
-            width: 100%;
-            height: 100%;
-            outline: none;
-            padding: 10px 8px;
-            font-size: 14px; /* Prevents auto-zoom on iOS/Android */
-            transition: all 0.15s ease;
-        }
-        
-        .sheet-grid td {
-            border: 1px solid rgba(148, 163, 184, 0.15);
-            padding: 0;
-            position: relative;
-        }
-        .dark .sheet-grid tr:hover { background-color: rgba(255, 255, 255, 0.03); }
-        .light .sheet-grid tr:hover { background-color: #f8fafc; }
-        
-        .sheet-grid input:focus, .sheet-grid select:focus {
-            box-shadow: inset 0 0 0 2px #f59e0b;
-            border-radius: 2px;
-        }
-        .dark .sheet-grid input:focus, .dark .sheet-grid select:focus {
-            background: #0f172a;
-            color: #f8fafc;
-        }
-        .light .sheet-grid input:focus, .light .sheet-grid select:focus {
-            background: #ffffff;
-            color: #0f172a;
-        }
-
-        /* Smooth scrollbars */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 4px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 4px; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 flex flex-col h-[100dvh] w-screen overflow-hidden selection:bg-amber-500 selection:text-slate-950">
+<body class="bg-obsidian text-gray-100 min-h-screen flex flex-col pb-24 md:pb-8 transition-colors duration-300">
 
-    <!-- Header Navigation -->
-    <header class="bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-800/80 flex-none z-30">
-        <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
-            <div class="flex items-center space-x-2.5 sm:space-x-3.5">
-                <!-- ORION Custom SVG Emblem -->
-                <div class="p-1.5 bg-gradient-to-br from-amber-500/20 to-amber-700/30 text-amber-400 rounded-xl border border-amber-500/30 shadow-lg shadow-amber-500/10 flex items-center justify-center shrink-0">
-                    <svg class="w-6 h-6 sm:w-7 sm:h-7 fill-current" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Left & Right Crescents -->
-                        <path d="M 60,100 C 60,40 140,40 140,100 C 140,160 60,160 60,100 Z M 76,100 C 76,142 124,142 124,100 C 124,58 76,58 76,100 Z" fill-rule="evenodd"/>
-                        <!-- Center Orion Four-Pointed Star -->
-                        <path d="M 100,30 L 108,82 L 160,100 L 108,118 L 100,170 L 92,118 L 40,100 L 92,82 Z"/>
-                    </svg>
-                </div>
-                <div class="min-w-0">
-                    <div class="flex items-center space-x-1.5">
-                        <h1 class="text-sm sm:text-xl font-black tracking-widest uppercase text-slate-100 font-mono truncate">ORION <span class="text-amber-500 font-sans font-light text-[10px] sm:text-xs tracking-widest ml-1 hidden xs:inline">FINANCIAL</span></h1>
-                    </div>
-                    <div class="flex items-center space-x-2 mt-0.5">
-                        <span id="sync-status" class="inline-flex items-center text-[9px] sm:text-[10px] text-amber-400 font-mono tracking-tight truncate">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse mr-1 shrink-0"></span> Conectando nube...
-                        </span>
-                    </div>
-                </div>
+    <!-- Header Ejecutivo -->
+    <header class="bg-slateCard border-b border-gray-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-lg">
+        <div class="flex items-center space-x-3">
+            <!-- Logo Orion Vectorial -->
+            <div class="w-10 h-10 flex items-center justify-center bg-obsidian border border-executiveGold/30 rounded-lg shadow-inner">
+                <svg viewBox="0 0 100 100" class="w-7 h-7 text-executiveGold fill-current">
+                    <path d="M50 5 C50 35 65 50 95 50 C65 50 50 65 50 95 C50 65 35 50 5 50 C35 50 50 35 50 5 Z"/>
+                </svg>
             </div>
+            <div>
+                <h1 class="font-bold tracking-widest text-lg text-white flex items-center gap-2">
+                    ORION <span class="text-xs px-2 py-0.5 rounded bg-executiveGold/10 text-executiveGold border border-executiveGold/25 font-normal">ENTERPRISE</span>
+                </h1>
+                <p class="text-xs text-gray-400 flex items-center gap-1.5">
+                    <span id="sync-status" class="inline-block w-2 h-2 rounded-full bg-emeraldAccent animate-pulse"></span> 
+                    <span id="sync-text">Sincronizado en la nube</span>
+                </p>
+            </div>
+        </div>
 
-            <!-- Desktop Period Selectors -->
-            <div class="hidden md:flex bg-slate-950/80 p-1 rounded-xl text-xs font-semibold space-x-1 border border-slate-800">
-                <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-4 py-2 rounded-lg flex items-center space-x-2 transition bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20">
-                    <i data-lucide="pie-chart" class="w-4 h-4"></i>
-                    <span>Dashboard General</span>
-                </button>
-                <button onclick="switchTab('q1')" id="tab-btn-q1" class="px-4 py-2 rounded-lg flex items-center space-x-2 transition text-slate-400 hover:text-white hover:bg-slate-900">
-                    <i data-lucide="calendar-days" class="w-4 h-4"><span>Del 01 al 15</span></i>
-                </button>
-                <button onclick="switchTab('q2')" id="tab-btn-q2" class="px-4 py-2 rounded-lg flex items-center space-x-2 transition text-slate-400 hover:text-white hover:bg-slate-900">
-                    <i data-lucide="calendar-days" class="w-4 h-4"><span>Del 16 al 30/31</span></i>
-                </button>
-            </div>
-
-            <!-- Executive Controls -->
-            <div class="flex items-center space-x-1.5 sm:space-x-2">
-                <button onclick="toggleTheme()" id="theme-toggle-btn" title="Cambiar Tema" class="p-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700/80 transition flex items-center justify-center">
-                    <i data-lucide="sun" id="theme-icon-sun" class="w-4 h-4 hidden"></i>
-                    <i data-lucide="moon" id="theme-icon-moon" class="w-4 h-4"></i>
-                </button>
-                <button onclick="exportData()" title="Exportar JSON" class="p-2 sm:px-3 sm:py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-slate-700/80 flex items-center space-x-1.5 transition">
-                    <i data-lucide="download" class="w-4 h-4 sm:w-3.5 sm:h-3.5 text-amber-400"></i>
-                    <span class="hidden sm:inline font-mono">Exportar</span>
-                </button>
-                <button onclick="resetToDefaults()" title="Restablecer Datos" class="p-2 bg-rose-950/30 hover:bg-rose-900/50 text-rose-400 border border-rose-900/40 rounded-lg transition">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                </button>
-            </div>
+        <!-- Controles Superiores -->
+        <div class="flex items-center gap-3">
+            <button onclick="toggleDarkMode()" id="darkModeBtn" class="p-2 rounded-lg bg-gray-800/60 border border-gray-700 text-executiveGold hover:bg-gray-700 transition" title="Cambiar Tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <button onclick="exportData()" class="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Exportar
+            </button>
         </div>
     </header>
 
-    <!-- Main Content Area with proper mobile scroll padding -->
-    <main class="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-5 md:p-6 bg-slate-950 dark:bg-slate-950 light:bg-slate-50 transition-colors duration-300 pb-24 md:pb-6">
-        <div class="max-w-7xl mx-auto w-full">
+    <!-- Contenedor Principal -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
 
-            <!-- DASHBOARD VIEW -->
-            <div id="view-dashboard" class="space-y-4 sm:space-y-6">
-                <!-- Filter Header Bar -->
-                <div class="exec-card p-3.5 sm:p-4 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        <div class="p-2 bg-slate-800 dark:bg-slate-800 light:bg-slate-200 rounded-lg text-amber-500 shrink-0">
-                            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
-                        </div>
-                        <span class="font-bold text-xs sm:text-sm text-slate-300 dark:text-slate-300 light:text-slate-700 uppercase tracking-wider font-mono">Rango:</span>
-                        <select id="dash-period-filter" onchange="updateDashboard()" class="flex-1 sm:flex-initial bg-slate-900 dark:bg-slate-900 light:bg-white border border-slate-800 dark:border-slate-800 light:border-slate-300 text-slate-200 dark:text-slate-200 light:text-slate-800 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-amber-500/50 outline-none">
-                            <option value="all">Consolidado Mensual</option>
-                            <option value="q1">Del 01 al 15</option>
-                            <option value="q2">Del 16 al 30/31</option>
-                        </select>
-                    </div>
-                    <div class="text-[10px] sm:text-[11px] font-mono text-slate-400 dark:text-slate-400 light:text-slate-500 flex items-center justify-center sm:justify-start space-x-1.5 bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 px-3 py-2 rounded-lg border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                        <i data-lucide="cloud-cog" class="w-3.5 h-3.5 text-amber-500"></i>
-                        <span>Sincronización Cloud Activa</span>
-                    </div>
-                </div>
-
-                <!-- KPI Metric Cards -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-                    <!-- Total Income -->
-                    <div class="exec-card p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Ingresos Totales</span>
-                            <div class="p-1.5 sm:p-2 bg-emerald-500/10 text-emerald-400 rounded-xl">
-                                <i data-lucide="trending-up" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2 sm:mt-3">
-                            <p id="kpi-income" class="text-base sm:text-2xl md:text-3xl font-extrabold text-slate-100 dark:text-slate-100 light:text-slate-900 font-mono tracking-tight truncate">$0.00</p>
-                            <p class="text-[9px] sm:text-xs text-emerald-500 mt-1 font-medium flex items-center truncate">
-                                <i data-lucide="arrow-up-right" class="w-3 h-3 mr-0.5 shrink-0"></i> Capital Acreditado
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Fixed Expenses -->
-                    <div class="exec-card p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Gastos / Deudas</span>
-                            <div class="p-1.5 sm:p-2 bg-rose-500/10 text-rose-400 rounded-xl">
-                                <i data-lucide="credit-card" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2 sm:mt-3">
-                            <p id="kpi-expenses" class="text-base sm:text-2xl md:text-3xl font-extrabold text-slate-100 dark:text-slate-100 light:text-slate-900 font-mono tracking-tight truncate">$0.00</p>
-                            <p id="kpi-expense-pct" class="text-[9px] sm:text-xs text-rose-400 mt-1 font-mono font-medium truncate">0% comprometido</p>
-                        </div>
-                    </div>
-
-                    <!-- Remaining Cash Flow -->
-                    <div class="exec-card p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Efectivo Libre</span>
-                            <div class="p-1.5 sm:p-2 bg-amber-500/10 text-amber-400 rounded-xl">
-                                <i data-lucide="coins" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2 sm:mt-3">
-                            <p id="kpi-remaining" class="text-base sm:text-2xl md:text-3xl font-extrabold text-slate-100 dark:text-slate-100 light:text-slate-900 font-mono tracking-tight truncate">$0.00</p>
-                            <p class="text-[9px] sm:text-xs text-slate-400 mt-1 truncate">Margen para el diario</p>
-                        </div>
-                    </div>
-
-                    <!-- Solvency Status -->
-                    <div class="exec-card p-3.5 sm:p-5 rounded-2xl col-span-2 sm:col-span-1 relative overflow-hidden">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] sm:text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Solvencia</span>
-                            <div id="kpi-status-icon" class="p-1.5 sm:p-2 bg-slate-800 text-slate-400 rounded-xl">
-                                <i data-lucide="activity" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                            </div>
-                        </div>
-                        <div class="mt-2 sm:mt-3">
-                            <p id="kpi-status-text" class="text-sm sm:text-xl font-black text-slate-100 dark:text-slate-100 light:text-slate-900 uppercase tracking-wide truncate">Evaluando...</p>
-                            <p id="kpi-status-sub" class="text-[9px] sm:text-xs text-slate-400 mt-1 truncate">Análisis de pasivos</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Visual Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                    <div class="exec-card p-4 sm:p-5 rounded-2xl">
-                        <div class="flex justify-between items-center mb-3 sm:mb-4">
-                            <h3 class="font-bold text-slate-200 dark:text-slate-200 light:text-slate-800 text-xs sm:text-sm uppercase tracking-wider font-mono flex items-center">
-                                <i data-lucide="pie-chart" class="w-4 h-4 mr-2 text-amber-500 shrink-0"></i>
-                                Distribución de Gastos
-                            </h3>
-                        </div>
-                        <div class="h-48 sm:h-64 relative w-full">
-                            <canvas id="chart-categories"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="exec-card p-4 sm:p-5 rounded-2xl">
-                        <div class="flex justify-between items-center mb-3 sm:mb-4">
-                            <h3 class="font-bold text-slate-200 dark:text-slate-200 light:text-slate-800 text-xs sm:text-sm uppercase tracking-wider font-mono flex items-center">
-                                <i data-lucide="bar-chart-2" class="w-4 h-4 mr-2 text-amber-500 shrink-0"></i>
-                                Capital vs Pasivos
-                            </h3>
-                        </div>
-                        <div class="h-48 sm:h-64 relative w-full">
-                            <canvas id="chart-comparison"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Executive Summary Table -->
-                <div class="exec-card rounded-2xl overflow-hidden">
-                    <div class="p-3.5 sm:p-4 border-b border-slate-800/80 bg-slate-900/40 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-200 text-xs sm:text-sm uppercase tracking-wider font-mono flex items-center">
-                            <i data-lucide="clock" class="w-4 h-4 mr-2 text-amber-500 shrink-0"></i>
-                            Compromisos Pendientes
-                        </h3>
-                        <span class="text-[10px] font-mono bg-slate-800 text-amber-400 px-2 py-0.5 rounded border border-slate-700">Por Liquidar</span>
-                    </div>
-                    <div class="overflow-x-auto w-full">
-                        <table class="w-full text-left text-xs min-w-[500px]">
-                            <thead>
-                                <tr class="bg-slate-900/80 text-slate-400 uppercase font-mono font-semibold text-[10px] tracking-wider border-b border-slate-800">
-                                    <th class="p-3">Rango</th>
-                                    <th class="p-3">Día</th>
-                                    <th class="p-3">Obligación / Concepto</th>
-                                    <th class="p-3">Categoría</th>
-                                    <th class="p-3 text-right">Monto</th>
-                                    <th class="p-3 text-center">Estatus</th>
-                                </tr>
-                            </thead>
-                            <tbody id="summary-table-body" class="divide-y divide-slate-800/40 text-xs">
-                                <!-- Dynamic JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Tarjetas KPI / Resumen Ejecutivo -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
+                <p class="text-xs text-gray-400 font-medium">Ingresos Totales</p>
+                <h3 id="kpi-ingresos" class="text-xl md:text-2xl font-bold text-white mt-1">$0.00</h3>
+                <span class="text-[10px] text-emerald-400 mt-1 block"><i class="fa-solid fa-arrow-trend-up"></i> Proyectado</span>
             </div>
-
-            <!-- PERIOD / QUINCENA VIEW -->
-            <div id="view-quincena" class="hidden space-y-4 sm:space-y-6">
-                <!-- Banner Header -->
-                <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-xl space-y-3 sm:space-y-4 relative overflow-hidden">
-                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                    <div class="flex flex-wrap justify-between items-center gap-2">
-                        <div class="flex items-center space-x-2 sm:space-x-3">
-                            <span id="q-badge" class="bg-amber-500 text-slate-950 font-mono text-[9px] sm:text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider">RANGO</span>
-                            <h2 id="q-title" class="text-base sm:text-xl md:text-2xl font-bold text-slate-100 tracking-tight">Presupuesto del Período</h2>
-                        </div>
-                    </div>
-
-                    <!-- Period Quick Balance Cards -->
-                    <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center pt-1 font-mono">
-                        <div class="bg-slate-950/80 p-2.5 sm:p-3 rounded-xl border border-slate-800/80">
-                            <div class="text-[9px] sm:text-xs text-slate-400 uppercase tracking-wider">Ingreso</div>
-                            <div id="q-total-inc" class="text-xs sm:text-lg md:text-xl font-bold text-emerald-400 mt-1 truncate">$0.00</div>
-                        </div>
-                        <div class="bg-slate-950/80 p-2.5 sm:p-3 rounded-xl border border-slate-800/80">
-                            <div class="text-[9px] sm:text-xs text-slate-400 uppercase tracking-wider">Gastos</div>
-                            <div id="q-total-exp" class="text-xs sm:text-lg md:text-xl font-bold text-rose-400 mt-1 truncate">$0.00</div>
-                        </div>
-                        <div class="bg-slate-950/80 p-2.5 sm:p-3 rounded-xl border border-slate-800/80">
-                            <div class="text-[9px] sm:text-xs text-slate-400 uppercase tracking-wider">Disponible</div>
-                            <div id="q-total-rem" class="text-xs sm:text-lg md:text-xl font-bold text-amber-400 mt-1 truncate">$0.00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Grid Tables -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-
-                    <!-- Table 1: Incomes -->
-                    <div class="lg:col-span-5 space-y-2.5 sm:space-y-3">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-bold text-slate-200 text-xs sm:text-sm font-mono uppercase tracking-wider flex items-center">
-                                <i data-lucide="arrow-down-left" class="w-4 h-4 mr-1.5 text-emerald-400 shrink-0"></i>
-                                1. Entradas de Capital
-                            </h3>
-                            <button onclick="addRow('income')" class="text-xs text-emerald-400 hover:text-emerald-300 font-mono font-semibold flex items-center bg-emerald-950/40 hover:bg-emerald-900/50 px-3 py-1.5 rounded-lg border border-emerald-800/50 transition">
-                                <i data-lucide="plus" class="w-3.5 h-3.5 mr-1"></i> Añadir
-                            </button>
-                        </div>
-
-                        <div class="exec-card rounded-2xl overflow-hidden overflow-x-auto w-full">
-                            <table class="w-full text-xs sheet-grid min-w-[280px]">
-                                <thead>
-                                    <tr class="bg-slate-900/90 text-slate-400 font-mono font-semibold text-[10px] uppercase">
-                                        <th class="p-2.5 text-left w-14">Día</th>
-                                        <th class="p-2.5 text-left">Concepto</th>
-                                        <th class="p-2.5 text-right w-24 sm:w-28">Monto ($)</th>
-                                        <th class="p-2.5 w-8"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="income-table-body" class="divide-y divide-slate-800/30">
-                                    <!-- Dynamic -->
-                                </tbody>
-                                <tfoot>
-                                    <tr class="bg-emerald-950/20 font-bold text-slate-200 border-t border-slate-800">
-                                        <td colspan="2" class="p-2.5 text-right text-[11px] font-mono">TOTAL:</td>
-                                        <td id="table-income-total" class="p-2.5 text-right font-mono text-emerald-400 text-xs sm:text-sm">$0.00</td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Table 2: Expenses & Debts -->
-                    <div class="lg:col-span-7 space-y-2.5 sm:space-y-3">
-                        <div class="flex items-center justify-between">
-                            <h3 class="font-bold text-slate-200 text-xs sm:text-sm font-mono uppercase tracking-wider flex items-center">
-                                <i data-lucide="arrow-up-right" class="w-4 h-4 mr-1.5 text-rose-400 shrink-0"></i>
-                                2. Deudas y Gastos Proyectados
-                            </h3>
-                            <button onclick="addRow('expense')" class="text-xs text-rose-400 hover:text-rose-300 font-mono font-semibold flex items-center bg-rose-950/40 hover:bg-rose-900/50 px-3 py-1.5 rounded-lg border border-rose-800/50 transition">
-                                <i data-lucide="plus" class="w-3.5 h-3.5 mr-1"></i> Añadir
-                            </button>
-                        </div>
-
-                        <div class="exec-card rounded-2xl overflow-hidden overflow-x-auto w-full">
-                            <table class="w-full text-xs sheet-grid min-w-[500px]">
-                                <thead>
-                                    <tr class="bg-slate-900/90 text-slate-400 font-mono font-semibold text-[10px] uppercase">
-                                        <th class="p-2.5 text-left w-12">Día</th>
-                                        <th class="p-2.5 text-left">Acreedor / Concepto</th>
-                                        <th class="p-2.5 text-left w-24 sm:w-28">Categoría</th>
-                                        <th class="p-2.5 text-right w-20 sm:w-24">Monto ($)</th>
-                                        <th class="p-2.5 text-center w-24 sm:w-28">Estatus</th>
-                                        <th class="p-2.5 w-8"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="expense-table-body" class="divide-y divide-slate-800/30">
-                                    <!-- Dynamic -->
-                                </tbody>
-                                <tfoot>
-                                    <tr class="bg-rose-950/20 font-bold text-slate-200 border-t border-slate-800">
-                                        <td colspan="3" class="p-2.5 text-right text-[11px] font-mono">TOTAL:</td>
-                                        <td id="table-expense-total" class="p-2.5 text-right font-mono text-rose-400 text-xs sm:text-sm">$0.00</td>
-                                        <td colspan="2"></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Live Formula Indicator -->
-                <div class="exec-card p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div class="space-y-1">
-                        <span class="text-[10px] font-mono bg-slate-900 text-amber-500 px-2.5 py-1 rounded border border-slate-800 inline-block">
-                            Fórmula: = Σ(INGRESOS) - Σ(GASTOS Y DEUDAS)
-                        </span>
-                        <p class="text-xs text-slate-400">Efectivo libre remanente para subsistencia del período.</p>
-                    </div>
-                    <div class="w-full sm:w-auto text-left sm:text-right border-t border-slate-800/80 sm:border-0 pt-2 sm:pt-0 flex sm:block justify-between items-center font-mono">
-                        <span class="text-xs font-semibold text-slate-400 uppercase">Efectivo Líquido:</span>
-                        <div id="q-net-balance" class="text-lg sm:text-xl md:text-2xl font-black text-slate-100">$0.00</div>
-                    </div>
-                </div>
-
+            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
+                <p class="text-xs text-gray-400 font-medium">Gastos / Deudas</p>
+                <h3 id="kpi-gastos" class="text-xl md:text-2xl font-bold text-red-400 mt-1">$0.00</h3>
+                <span class="text-[10px] text-gray-400 mt-1 block"><i class="fa-solid fa-wallet"></i> Comprometido</span>
             </div>
-
+            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
+                <p class="text-xs text-gray-400 font-medium">Efectivo Libre</p>
+                <h3 id="kpi-libre" class="text-xl md:text-2xl font-bold text-executiveGold mt-1">$0.00</h3>
+                <span class="text-[10px] text-executiveGold/80 mt-1 block"><i class="fa-solid fa-scale-balanced"></i> Margen actual</span>
+            </div>
+            <div class="bg-slateCard border border-gray-800 p-4 rounded-xl shadow">
+                <p class="text-xs text-gray-400 font-medium">Salud Financiera</p>
+                <h3 id="kpi-salud" class="text-lg md:text-xl font-bold text-emerald-400 mt-1">Óptima</h3>
+                <span id="kpi-salud-desc" class="text-[10px] text-gray-400 mt-1 block">Margen seguro</span>
+            </div>
         </div>
+
+        <!-- Pestañas de Navegación del Plazo -->
+        <div class="flex border-b border-gray-800 overflow-x-auto custom-scrollbar">
+            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-5 py-3 text-sm font-semibold border-b-2 border-executiveGold text-executiveGold whitespace-nowrap transition">
+                <i class="fa-solid fa-chart-pie mr-2"></i> Dashboard General
+            </button>
+            <button onclick="switchTab('quincena1')" id="tab-btn-quincena1" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white whitespace-nowrap transition">
+                <i class="fa-solid fa-calendar-day mr-2"></i> Del 01 al 15
+            </button>
+            <button onclick="switchTab('quincena2')" id="tab-btn-quincena2" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white whitespace-nowrap transition">
+                <i class="fa-solid fa-calendar-days mr-2"></i> Del 16 al 30/31
+            </button>
+        </div>
+
+        <!-- SECCIÓN: DASHBOARD -->
+        <div id="tab-dashboard" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Gráfica de Distribución -->
+                <div class="bg-slateCard border border-gray-800 p-5 rounded-2xl shadow">
+                    <h3 class="text-sm font-bold tracking-wider text-gray-300 uppercase mb-4"><i class="fa-solid fa-chart-pie text-executiveGold mr-2"></i> Distribución de Gastos</h3>
+                    <div class="relative h-64 flex items-center justify-center">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+                <!-- Diagnóstico Ejecutivo -->
+                <div class="bg-slateCard border border-gray-800 p-5 rounded-2xl shadow flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold tracking-wider text-gray-300 uppercase mb-4"><i class="fa-solid fa-shield-halved text-executiveGold mr-2"></i> Diagnóstico de Liquidez</h3>
+                        <div id="executive-summary-text" class="space-y-3 text-sm text-gray-300">
+                            <p>Cargando análisis financiero inteligente...</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-800/80 flex justify-between items-center text-xs text-gray-400">
+                        <span>Estrategia: Cero Fugas</span>
+                        <span class="text-executiveGold font-semibold">Orion Protocol</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: PLAZO 1 (Del 01 al 15) -->
+        <div id="tab-quincena1" class="space-y-6 hidden">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-day text-executiveGold mr-2"></i> Plazo: Del 01 al 15</h2>
+                <button onclick="openModal('q1')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow">
+                    <i class="fa-solid fa-plus mr-1"></i> Agregar Movimiento
+                </button>
+            </div>
+            <!-- Tabla -->
+            <div class="bg-slateCard border border-gray-800 rounded-xl overflow-hidden shadow">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-obsidian/60 text-gray-400 border-b border-gray-800 text-xs uppercase">
+                            <tr>
+                                <th class="p-3">Estado</th>
+                                <th class="p-3">Concepto</th>
+                                <th class="p-3">Categoría</th>
+                                <th class="p-3">Tipo</th>
+                                <th class="p-3 text-right">Monto</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-q1" class="divide-y divide-gray-800/60">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: PLAZO 2 (Del 16 al 30/31) -->
+        <div id="tab-quincena2" class="space-y-6 hidden">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-days text-executiveGold mr-2"></i> Plazo: Del 16 al 30/31</h2>
+                <button onclick="openModal('q2')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-executiveGold text-obsidian hover:bg-executiveGoldHover transition shadow">
+                    <i class="fa-solid fa-plus mr-1"></i> Agregar Movimiento
+                </button>
+            </div>
+            <!-- Tabla -->
+            <div class="bg-slateCard border border-gray-800 rounded-xl overflow-hidden shadow">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-obsidian/60 text-gray-400 border-b border-gray-800 text-xs uppercase">
+                            <tr>
+                                <th class="p-3">Estado</th>
+                                <th class="p-3">Concepto</th>
+                                <th class="p-3">Categoría</th>
+                                <th class="p-3">Tipo</th>
+                                <th class="p-3 text-right">Monto</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-q2" class="divide-y divide-gray-800/60">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Mobile Bottom Navigation Bar -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800/80 z-30 px-2 py-2 flex justify-around items-center">
-        <button onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="flex flex-col items-center py-1 px-3 rounded-lg text-amber-400 font-bold">
-            <i data-lucide="pie-chart" class="w-5 h-5"></i>
-            <span class="text-[10px] font-mono mt-0.5">Dashboard</span>
+    <!-- Barra de Navegación Móvil Inferior -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slateCard border-t border-gray-800 px-4 py-3 flex justify-around items-center z-50">
+        <button onclick="switchTab('dashboard')" id="mob-btn-dashboard" class="flex flex-col items-center text-executiveGold text-xs font-medium">
+            <i class="fa-solid fa-chart-pie text-base mb-1"></i> Dashboard
         </button>
-        <button onclick="switchTab('q1')" id="mobile-tab-q1" class="flex flex-col items-center py-1 px-3 rounded-lg text-slate-400">
-            <i data-lucide="calendar-days" class="w-5 h-5"></i>
-            <span class="text-[10px] font-mono mt-0.5">01 al 15</span>
+        <button onclick="switchTab('quincena1')" id="mob-btn-quincena1" class="flex flex-col items-center text-gray-400 text-xs font-medium">
+            <i class="fa-solid fa-calendar-day text-base mb-1"></i> 01 al 15
         </button>
-        <button onclick="switchTab('q2')" id="mobile-tab-q2" class="flex flex-col items-center py-1 px-3 rounded-lg text-slate-400">
-            <i data-lucide="calendar-days" class="w-5 h-5"></i>
-            <span class="text-[10px] font-mono mt-0.5">16 al 30</span>
+        <button onclick="switchTab('quincena2')" id="mob-btn-quincena2" class="flex flex-col items-center text-gray-400 text-xs font-medium">
+            <i class="fa-solid fa-calendar-days text-base mb-1"></i> 16 al 31
+        </button>
+        <button onclick="openModal('current')" class="flex flex-col items-center text-executiveGold text-xs font-medium">
+            <i class="fa-solid fa-circle-plus text-base mb-1"></i> Nuevo
         </button>
     </nav>
 
-    <!-- JavaScript Application Logic & Cloud Sync -->
+    <!-- Modal para Nuevo Movimiento -->
+    <div id="movementModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slateCard border border-gray-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="font-bold text-white text-base">Registrar Nuevo Movimiento</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="movementForm" onsubmit="saveMovement(event)" class="space-y-4 text-sm">
+                <input type="hidden" id="form-periodo" value="q1">
+                <div>
+                    <label class="block text-gray-400 text-xs mb-1">Plazo</label>
+                    <select id="input-periodo" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                        <option value="q1">Del 01 al 15</option>
+                        <option value="q2">Del 16 al 30/31</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-xs mb-1">Tipo</label>
+                    <select id="input-tipo" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                        <option value="ingreso">Ingreso (Sueldo / Extra)</option>
+                        <option value="gasto">Gasto / Deuda</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-xs mb-1">Concepto</label>
+                    <input type="text" id="input-concepto" required placeholder="Ej. Nómina Coppel, Renta, Préstamo..." class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-1">Categoría</label>
+                        <select id="input-categoria" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                            <option value="Nómina">Nómina</option>
+                            <option value="Deudas">Deudas</option>
+                            <option value="Vivienda/Servicios">Vivienda/Servicios</option>
+                            <option value="Alimentos">Alimentos</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-1">Monto ($)</label>
+                        <input type="number" step="0.01" id="input-monto" required placeholder="0.00" class="w-full bg-obsidian border border-gray-800 rounded-lg p-2.5 text-white focus:border-executiveGold outline-none">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg bg-executiveGold text-obsidian font-semibold hover:bg-executiveGoldHover">Guardar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lógica de la Aplicación -->
     <script>
-        const defaultData = {
-            q1: {
-                title: "Período Inicial (Del 01 al 15)",
-                incomes: [
-                    { id: 1, date: "15", concept: "Nómina de Capital Base", amount: 12000 },
-                    { id: 2, date: "15", concept: "Incentivo / Bonificación", amount: 1500 }
-                ],
-                expenses: [
-                    { id: 1, date: "15", concept: "Hipoteca / Renta", category: "Vivienda", amount: 4500, status: "Pendiente" },
-                    { id: 2, date: "16", concept: "Tarjeta Corporativa / Crédito", category: "Deudas", amount: 2200, status: "Pendiente" },
-                    { id: 3, date: "18", concept: "Servicios Básicos (Luz)", category: "Servicios", amount: 650, status: "Pendiente" },
-                    { id: 4, date: "20", concept: "Telecomunicaciones e Internet", category: "Servicios", amount: 550, status: "Pendiente" },
-                    { id: 5, date: "22", concept: "Amortización de Préstamo", category: "Deudas", amount: 1200, status: "Pendiente" }
-                ]
-            },
-            q2: {
-                title: "Período Cierre (Del 16 al 30/31)",
-                incomes: [
-                    { id: 1, date: "30", concept: "Nómina de Capital Base", amount: 12000 }
-                ],
-                expenses: [
-                    { id: 1, date: "01", concept: "Provisiones y Suministros", category: "Alimentos", amount: 2500, status: "Pendiente" },
-                    { id: 2, date: "02", concept: "Mantenimiento & Condominio", category: "Vivienda", amount: 400, status: "Pendiente" },
-                    { id: 3, date: "05", concept: "Combustible / Movilidad", category: "Transporte", amount: 1500, status: "Pendiente" },
-                    { id: 4, date: "10", concept: "Suscripciones Ejecutivas", category: "Ocio", amount: 350, status: "Pendiente" }
-                ]
-            }
+        let db = {
+            q1: [
+                { id: 1, concepto: "Sueldo Quincenal", categoria: "Nómina", tipo: "ingreso", monto: 8500, pagado: true },
+                { id: 2, concepto: "Tarjeta de Crédito", categoria: "Deudas", tipo: "gasto", monto: 2500, pagado: false },
+                { id: 3, concepto: "Renta Departamento", categoria: "Vivienda/Servicios", tipo: "gasto", monto: 3500, pagado: false }
+            ],
+            q2: [
+                { id: 4, concepto: "Sueldo Quincenal", categoria: "Nómina", tipo: "ingreso", monto: 8500, pagado: false },
+                { id: 5, concepto: "Préstamo BanCoppel", categoria: "Deudas", tipo: "gasto", monto: 2000, pagado: false },
+                { id: 6, concepto: "Supermercado / Alimentos", categoria: "Alimentos", tipo: "gasto", monto: 2500, pagado: false }
+            ]
         };
 
-        const categoriesList = ["Vivienda", "Deudas", "Servicios", "Alimentos", "Transporte", "Ocio", "Salud", "Ahorro", "Otros"];
+        let activeTab = 'dashboard';
+        let expenseChartInstance = null;
 
-        let appData = JSON.parse(JSON.stringify(defaultData));
-        let activeTab = "dashboard"; 
-        let currentTheme = "dark";
-        let chartCatInstance = null;
-        let chartCompInstance = null;
-
-        let db, auth;
-        let unsubscribeData = null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'orion-budget-app';
-
-        window.onload = async function() {
-            lucide.createIcons();
-            initTheme();
-            await initFirebaseAndSync();
-        };
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('orion_theme') || 'dark';
-            setTheme(savedTheme);
+        // Sincronización Local / Nube simulada y persistente en LocalStorage
+        function saveData() {
+            localStorage.setItem('orion_finances_data', JSON.stringify(db));
+            updateUI();
         }
 
-        function toggleTheme() {
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            setTheme(newTheme);
-        }
-
-        function setTheme(theme) {
-            currentTheme = theme;
-            localStorage.setItem('orion_theme', theme);
-            
-            const htmlEl = document.documentElement;
-            const moonIcon = document.getElementById('theme-icon-moon');
-            const sunIcon = document.getElementById('theme-icon-sun');
-
-            if (theme === 'dark') {
-                htmlEl.classList.add('dark');
-                htmlEl.classList.remove('light');
-                if (moonIcon) moonIcon.classList.remove('hidden');
-                if (sunIcon) sunIcon.classList.add('hidden');
-            } else {
-                htmlEl.classList.remove('dark');
-                htmlEl.classList.add('light');
-                if (moonIcon) moonIcon.classList.add('hidden');
-                if (sunIcon) sunIcon.classList.remove('hidden');
+        function loadData() {
+            const saved = localStorage.getItem('orion_finances_data');
+            if (saved) {
+                try { db = JSON.parse(saved); } catch(e) {}
             }
-
-            if (chartCatInstance || chartCompInstance) {
-                updateDashboard();
-            }
-        }
-
-        async function initFirebaseAndSync() {
-            try {
-                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
-                const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
-                const { getFirestore, doc, setDoc, onSnapshot, getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-                if (!firebaseConfig) {
-                    throw new Error("No Firebase config available");
-                }
-
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'budget_state');
-
-                unsubscribeData = onSnapshot(docRef, (docSnap) => {
-                    const syncEl = document.getElementById('sync-status');
-                    if (docSnap.exists()) {
-                        appData = docSnap.data();
-                    } else {
-                        setDoc(docRef, defaultData);
-                        appData = JSON.parse(JSON.stringify(defaultData));
-                    }
-                    if (syncEl) {
-                        syncEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1 shrink-0"></span> Sincronizado Nube`;
-                    }
-                    renderApp();
-                }, (error) => {
-                    console.error("Cloud sync error:", error);
-                    const syncEl = document.getElementById('sync-status');
-                    if (syncEl) {
-                        syncEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 mr-1 shrink-0"></span> Modo Local Activo`;
-                    }
-                    renderApp();
-                });
-
-            } catch (e) {
-                console.warn("Cloud connection fallback to local state.", e);
-                const syncEl = document.getElementById('sync-status');
-                if (syncEl) {
-                    syncEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-blue-400 mr-1 shrink-0"></span> Modo Local Activo`;
-                }
-                renderApp();
-            }
-        }
-
-        async function saveData() {
-            renderApp();
-            if (db && auth && auth.currentUser) {
-                try {
-                    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'budget_state');
-                    await setDoc(docRef, appData);
-                } catch (err) {
-                    console.error("Error saving to cloud:", err);
-                }
-            }
-        }
-
-        function resetToDefaults() {
-            appData = JSON.parse(JSON.stringify(defaultData));
-            saveData();
+            updateUI();
         }
 
         function switchTab(tab) {
             activeTab = tab;
-            
-            ['dashboard', 'q1', 'q2'].forEach(t => {
+            ['dashboard', 'quincena1', 'quincena2'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
                 const btn = document.getElementById(`tab-btn-${t}`);
-                if (btn) {
-                    if (t === tab) {
-                        btn.className = "px-4 py-2 rounded-lg flex items-center space-x-2 transition bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20";
-                    } else {
-                        btn.className = "px-4 py-2 rounded-lg flex items-center space-x-2 transition text-slate-400 hover:text-white hover:bg-slate-900";
-                    }
+                if(btn) {
+                    btn.classList.remove('border-executiveGold', 'text-executiveGold');
+                    btn.classList.add('border-transparent', 'text-gray-400');
                 }
-
-                const mobileBtn = document.getElementById(`mobile-tab-${t}`);
-                if (mobileBtn) {
-                    if (t === tab) {
-                        mobileBtn.className = "flex flex-col items-center py-1 px-3 rounded-lg text-amber-400 font-bold";
-                    } else {
-                        mobileBtn.className = "flex flex-col items-center py-1 px-3 rounded-lg text-slate-400";
-                    }
-                }
+                const mobBtn = document.getElementById(`mob-btn-${t}`);
+                if(mobBtn) mobBtn.classList.replace('text-executiveGold', 'text-gray-400');
             });
 
-            const dashView = document.getElementById('view-dashboard');
-            const qView = document.getElementById('view-quincena');
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tab}`);
+            if(activeBtn) {
+                activeBtn.classList.add('border-executiveGold', 'text-executiveGold');
+                activeBtn.classList.remove('border-transparent', 'text-gray-400');
+            }
+            const activeMob = document.getElementById(`mob-btn-${tab}`);
+            if(activeMob) activeMob.classList.replace('text-gray-400', 'text-executiveGold');
+        }
 
-            if (tab === 'dashboard') {
-                dashView.classList.remove('hidden');
-                qView.classList.add('hidden');
-                updateDashboard();
+        function openModal(periodo) {
+            document.getElementById('movementModal').classList.remove('hidden');
+            if(periodo !== 'current') {
+                document.getElementById('input-periodo').value = periodo;
             } else {
-                dashView.classList.add('hidden');
-                qView.classList.remove('hidden');
-                renderQuincenaSheet(tab);
+                document.getElementById('input-periodo').value = activeTab === 'quincena2' ? 'q2' : 'q1';
             }
         }
 
-        function renderQuincenaSheet(qKey) {
-            const data = appData[qKey];
-            
-            document.getElementById('q-badge').innerText = qKey === 'q1' ? 'DEL 01 AL 15' : 'DEL 16 AL 30/31';
-            document.getElementById('q-title').innerText = data.title;
-
-            // Income Table
-            const incBody = document.getElementById('income-table-body');
-            incBody.innerHTML = '';
-            let totalInc = 0;
-
-            data.incomes.forEach((inc, index) => {
-                totalInc += Number(inc.amount) || 0;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><input type="text" value="${inc.date || ''}" placeholder="Día" class="font-mono text-center" onchange="updateRow('${qKey}', 'incomes', ${index}, 'date', this.value)"></td>
-                    <td><input type="text" value="${inc.concept || ''}" placeholder="Concepto..." onchange="updateRow('${qKey}', 'incomes', ${index}, 'concept', this.value)"></td>
-                    <td><input type="number" value="${inc.amount || ''}" placeholder="0.00" class="text-right font-mono" onchange="updateRow('${qKey}', 'incomes', ${index}, 'amount', parseFloat(this.value)||0)"></td>
-                    <td class="text-center">
-                        <button onclick="deleteRow('${qKey}', 'incomes', ${index})" class="text-slate-500 hover:text-rose-400 p-1.5 transition">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </td>
-                `;
-                incBody.appendChild(tr);
-            });
-
-            // Expense Table
-            const expBody = document.getElementById('expense-table-body');
-            expBody.innerHTML = '';
-            let totalExp = 0;
-
-            data.expenses.forEach((exp, index) => {
-                totalExp += Number(exp.amount) || 0;
-                const catOpts = categoriesList.map(c => `<option value="${c}" ${exp.category === c ? 'selected' : ''}>${c}</option>`).join('');
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><input type="text" value="${exp.date || ''}" placeholder="Día" class="font-mono text-center" onchange="updateRow('${qKey}', 'expenses', ${index}, 'date', this.value)"></td>
-                    <td><input type="text" value="${exp.concept || ''}" placeholder="Gasto o Deuda..." onchange="updateRow('${qKey}', 'expenses', ${index}, 'concept', this.value)"></td>
-                    <td>
-                        <select onchange="updateRow('${qKey}', 'expenses', ${index}, 'category', this.value)" class="text-xs bg-transparent">
-                            ${catOpts}
-                        </select>
-                    </td>
-                    <td><input type="number" value="${exp.amount || ''}" placeholder="0.00" class="text-right font-mono" onchange="updateRow('${qKey}', 'expenses', ${index}, 'amount', parseFloat(this.value)||0)"></td>
-                    <td class="text-center">
-                        <select onchange="updateRow('${qKey}', 'expenses', ${index}, 'status', this.value)" class="text-xs font-mono font-bold ${exp.status === 'Pagado' ? 'text-emerald-400' : 'text-amber-400'}">
-                            <option value="Pendiente" ${exp.status === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                            <option value="Pagado" ${exp.status === 'Pagado' ? 'selected' : ''}>Pagado</option>
-                        </select>
-                    </td>
-                    <td class="text-center">
-                        <button onclick="deleteRow('${qKey}', 'expenses', ${index})" class="text-slate-500 hover:text-rose-400 p-1.5 transition">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </td>
-                `;
-                expBody.appendChild(tr);
-            });
-
-            const net = totalInc - totalExp;
-            document.getElementById('table-income-total').innerText = formatCurrency(totalInc);
-            document.getElementById('table-expense-total').innerText = formatCurrency(totalExp);
-            
-            document.getElementById('q-total-inc').innerText = formatCurrency(totalInc);
-            document.getElementById('q-total-exp').innerText = formatCurrency(totalExp);
-            document.getElementById('q-total-rem').innerText = formatCurrency(net);
-            document.getElementById('q-net-balance').innerText = formatCurrency(net);
-
-            const netEl = document.getElementById('q-net-balance');
-            if (net < 0) {
-                netEl.className = "text-lg sm:text-xl md:text-2xl font-black text-rose-500 font-mono";
-            } else {
-                netEl.className = "text-lg sm:text-xl md:text-2xl font-black text-emerald-400 font-mono";
-            }
-
-            lucide.createIcons();
+        function closeModal() {
+            document.getElementById('movementModal').classList.add('hidden');
+            document.getElementById('movementForm').reset();
         }
 
-        function updateRow(qKey, collection, index, field, value) {
-            appData[qKey][collection][index][field] = value;
-            saveData();
-        }
+        function saveMovement(e) {
+            e.preventDefault();
+            const periodo = document.getElementById('input-periodo').value;
+            const tipo = document.getElementById('input-tipo').value;
+            const concepto = document.getElementById('input-concepto').value;
+            const categoria = document.getElementById('input-categoria').value;
+            const monto = parseFloat(document.getElementById('input-monto').value) || 0;
 
-        function addRow(type) {
-            if (activeTab === 'dashboard') return;
-            
-            if (type === 'income') {
-                appData[activeTab].incomes.push({ id: Date.now(), date: "15", concept: "Nuevo Ingreso", amount: 0 });
-            } else {
-                appData[activeTab].expenses.push({ id: Date.now(), date: "15", concept: "Nuevo Compromiso", category: "Otros", amount: 0, status: "Pendiente" });
-            }
-            saveData();
-        }
-
-        function deleteRow(qKey, collection, index) {
-            appData[qKey][collection].splice(index, 1);
-            saveData();
-        }
-
-        function updateDashboard() {
-            const filter = document.getElementById('dash-period-filter').value;
-            
-            let totalIncome = 0;
-            let totalExpense = 0;
-            let categoriesMap = {};
-            let pendingItems = [];
-
-            const processQ = (qKey, label) => {
-                const q = appData[qKey];
-                
-                q.incomes.forEach(i => {
-                    totalIncome += Number(i.amount) || 0;
-                });
-
-                q.expenses.forEach(e => {
-                    const amt = Number(e.amount) || 0;
-                    totalExpense += amt;
-                    categoriesMap[e.category] = (categoriesMap[e.category] || 0) + amt;
-
-                    if (e.status === 'Pendiente') {
-                        pendingItems.push({
-                            quincena: label,
-                            date: e.date,
-                            concept: e.concept,
-                            category: e.category,
-                            amount: amt,
-                            status: e.status
-                        });
-                    }
-                });
+            const newItem = {
+                id: Date.now(),
+                concepto,
+                categoria,
+                tipo,
+                monto,
+                pagado: false
             };
 
-            if (filter === 'all' || filter === 'q1') processQ('q1', 'Del 01 al 15');
-            if (filter === 'all' || filter === 'q2') processQ('q2', 'Del 16 al 30/31');
-
-            const remaining = totalIncome - totalExpense;
-            const expPct = totalIncome > 0 ? ((totalExpense / totalIncome) * 100).toFixed(1) : 0;
-
-            document.getElementById('kpi-income').innerText = formatCurrency(totalIncome);
-            document.getElementById('kpi-expenses').innerText = formatCurrency(totalExpense);
-            document.getElementById('kpi-remaining').innerText = formatCurrency(remaining);
-            document.getElementById('kpi-expense-pct').innerText = `${expPct}% comprometido`;
-
-            const statusText = document.getElementById('kpi-status-text');
-            const statusSub = document.getElementById('kpi-status-sub');
-            const statusIcon = document.getElementById('kpi-status-icon');
-
-            if (remaining < 0) {
-                statusText.innerText = "Déficit Crítico";
-                statusText.className = "text-sm sm:text-lg font-black text-rose-500 font-mono truncate";
-                statusSub.innerText = "Pasivos superan el activo";
-                statusIcon.className = "p-1.5 sm:p-2 bg-rose-500/10 text-rose-400 rounded-xl";
-            } else if (remaining < totalIncome * 0.15) {
-                statusText.innerText = "Margen Ajustado";
-                statusText.className = "text-sm sm:text-lg font-black text-amber-400 font-mono truncate";
-                statusSub.innerText = "Holgura menor al 15%";
-                statusIcon.className = "p-1.5 sm:p-2 bg-amber-500/10 text-amber-400 rounded-xl";
-            } else {
-                statusText.innerText = "Solvente";
-                statusText.className = "text-sm sm:text-lg font-black text-emerald-400 font-mono truncate";
-                statusSub.innerText = "Estructura óptima";
-                statusIcon.className = "p-1.5 sm:p-2 bg-emerald-500/10 text-emerald-400 rounded-xl";
-            }
-
-            const summaryBody = document.getElementById('summary-table-body');
-            summaryBody.innerHTML = '';
-
-            if (pendingItems.length === 0) {
-                summaryBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 font-mono">Sin obligaciones pendientes.</td></tr>`;
-            } else {
-                pendingItems.forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="p-3 font-mono font-bold text-slate-400 text-[11px]">${item.quincena}</td>
-                        <td class="p-3 font-mono text-slate-400 text-[11px]">Día ${item.date || '-'}</td>
-                        <td class="p-3 font-medium text-slate-200 text-[11px]">${item.concept}</td>
-                        <td class="p-3"><span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-mono">${item.category}</span></td>
-                        <td class="p-3 text-right font-mono font-bold text-slate-200 text-[11px]">${formatCurrency(item.amount)}</td>
-                        <td class="p-3 text-center"><span class="bg-amber-500/10 text-amber-400 font-mono font-bold px-2 py-0.5 rounded text-[10px]">Pendiente</span></td>
-                    `;
-                    summaryBody.appendChild(tr);
-                });
-            }
-
-            renderCharts(categoriesMap, totalIncome, totalExpense);
+            db[periodo].push(newItem);
+            saveData();
+            closeModal();
         }
 
-        function renderCharts(categoriesMap, income, expense) {
-            const isDark = currentTheme === 'dark';
-            const textColor = isDark ? '#94a3b8' : '#475569';
-            const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+        function deleteItem(periodo, id) {
+            db[periodo] = db[periodo].filter(item => item.id !== id);
+            saveData();
+        }
 
-            const ctxCat = document.getElementById('chart-categories').getContext('2d');
-            const catLabels = Object.keys(categoriesMap);
-            const catData = Object.values(categoriesMap);
+        function togglePagado(periodo, id) {
+            const item = db[periodo].find(i => i.id === id);
+            if(item) {
+                item.pagado = !item.pagado;
+                saveData();
+            }
+        }
 
-            if (chartCatInstance) chartCatInstance.destroy();
+        function updateUI() {
+            // Renderizar tablas
+            ['q1', 'q2'].forEach(p => {
+                const tbody = document.getElementById(`table-${p}`);
+                tbody.innerHTML = '';
+                db[p].forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-800/40 transition";
+                    tr.innerHTML = `
+                        <td class="p-3">
+                            <input type="checkbox" ${item.pagado ? 'checked' : ''} onchange="togglePagado('${p}', ${item.id})" class="w-4 h-4 accent-executiveGold rounded cursor-pointer">
+                        </td>
+                        <td class="p-3 font-medium text-white">${item.concepto}</td>
+                        <td class="p-3 text-gray-400 text-xs">${item.categoria}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${item.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
+                                ${item.tipo.toUpperCase()}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right font-bold ${item.tipo === 'ingreso' ? 'text-emerald-400' : 'text-white'}">
+                            $${item.monto.toLocaleString('es-MX', {minimumFractionDigits: 2})}
+                        </td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteItem('${p}', ${item.id})" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
 
-            chartCatInstance = new Chart(ctxCat, {
+            // Calcular KPIs
+            let totalIngresos = 0;
+            let totalGastos = 0;
+            ['q1', 'q2'].forEach(p => {
+                db[p].forEach(i => {
+                    if(i.tipo === 'ingreso') totalIngresos += i.monto;
+                    else totalGastos += i.monto;
+                });
+            });
+
+            const efectivoLibre = totalIngresos - totalGastos;
+            document.getElementById('kpi-ingresos').innerText = `$${totalIngresos.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-gastos').innerText = `$${totalGastos.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-libre').innerText = `$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+            const saludEl = document.getElementById('kpi-salud');
+            const saludDesc = document.getElementById('kpi-salud-desc');
+            if(efectivoLibre > 5000) {
+                saludEl.innerText = "Óptima";
+                saludEl.className = "text-lg md:text-xl font-bold text-emerald-400 mt-1";
+                saludDesc.innerText = "Margen de maniobra amplio";
+            } else if(efectivoLibre >= 0) {
+                saludEl.innerText = "Estable";
+                saludEl.className = "text-lg md:text-xl font-bold text-executiveGold mt-1";
+                saludDesc.innerText = "Equilibrio ajustado";
+            } else {
+                saludEl.innerText = "Crítica";
+                saludEl.className = "text-lg md:text-xl font-bold text-red-400 mt-1";
+                saludDesc.innerText = "Déficit proyectado";
+            }
+
+            // Resumen Ejecutivo Text
+            document.getElementById('executive-summary-text').innerHTML = `
+                <p>Gestión centralizada para <strong>Orion Enterprise</strong>. Actualmente tus compromisos representan el <strong>${totalIngresos > 0 ? Math.round((totalGastos/totalIngresos)*100) : 0}%</strong> de tus ingresos globales.</p>
+                <p>El remanente estimado al finalizar los plazos es de <strong class="text-executiveGold">$${efectivoLibre.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong> líquidos.</p>
+            `;
+
+            updateChart();
+        }
+
+        function updateChart() {
+            const categorias = {};
+            ['q1', 'q2'].forEach(p => {
+                db[p].filter(i => i.tipo === 'gasto').forEach(i => {
+                    categorias[i.categoria] = (categorias[i.categoria] || 0) + i.monto;
+                });
+            });
+
+            const labels = Object.keys(categorias);
+            const data = Object.values(categorias);
+
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            if(expenseChartInstance) expenseChartInstance.destroy();
+
+            expenseChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: catLabels.length ? catLabels : ['Sin Registros'],
+                    labels: labels.length ? labels : ['Sin Gastos'],
                     datasets: [{
-                        data: catData.length ? catData : [1],
-                        backgroundColor: [
-                            '#f43f5e', '#3b82f6', '#10b981', '#f59e0b', 
-                            '#8b5cf6', '#ec4899', '#06b6d4', '#64748b'
-                        ],
-                        borderWidth: isDark ? 2 : 1,
-                        borderColor: isDark ? '#0f172a' : '#ffffff'
+                        data: data.length ? data : [1],
+                        backgroundColor: ['#d4af37', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#6b7280'],
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { 
-                            position: window.innerWidth < 640 ? 'bottom' : 'right',
-                            labels: { color: textColor, boxWidth: 10, font: { family: 'JetBrains Mono', size: 10 } }
-                        }
-                    }
-                }
-            });
-
-            const ctxComp = document.getElementById('chart-comparison').getContext('2d');
-            if (chartCompInstance) chartCompInstance.destroy();
-
-            chartCompInstance = new Chart(ctxComp, {
-                type: 'bar',
-                data: {
-                    labels: ['Capital vs Pasivos'],
-                    datasets: [
-                        { label: 'Entradas de Capital', data: [income], backgroundColor: '#10b981', borderRadius: 4 },
-                        { label: 'Deudas / Gastos', data: [expense], backgroundColor: '#f43f5e', borderRadius: 4 }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: textColor, boxWidth: 10, font: { family: 'JetBrains Mono', size: 10 } } }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } },
-                            grid: { color: gridColor }
-                        },
-                        x: {
-                            ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } },
-                            grid: { display: false }
-                        }
-                    }
+                        legend: { position: 'bottom', labels: { color: '#9ca3af', font: { size: 11 } } }
+                  }
                 }
             });
         }
 
-        function renderApp() {
-            if (activeTab === 'dashboard') {
-                updateDashboard();
-            } else {
-                renderQuincenaSheet(activeTab);
-            }
-        }
-
-        function formatCurrency(val) {
-            return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val || 0);
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
         }
 
         function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
-            const dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `orion_capital_${new Date().toISOString().slice(0,10)}.json`);
-            dlAnchorElem.click();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "orion_presupuesto.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         }
+
+        // Inicializar
+        loadData();
     </script>
 </body>
 </html>
