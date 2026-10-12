@@ -15,33 +15,39 @@
             theme: {
                 extend: {
                     colors: {
-                        orionBg: '#0A1E4D',       /* Azul Marino corporativo */
-                        orionCard: '#0f2966',     /* Tono superior para tarjetas */
-                        orionRoyal: '#135BFF',    /* Azul Rey oficial */
-                        orionCian: '#00E5FF'      /* Cian Eléctrico oficial */
+                        orionBg: '#050B14',       /* Fondo ultra oscuro no cansado para la vista */
+                        orionCard: '#0A1222',     /* Tarjetas en azul profundo suave */
+                        orionRoyal: '#135BFF',    /* Azul Rey */
+                        orionCian: '#00E5FF'      /* Cian Eléctrico para acentos clave */
                     }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0A1E4D; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #050B14; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.2); border-radius: 4px; }
+        
+        /* Estilos optimizados para el Logo Orion */
+        .orion-logo { display: inline-flex; align-items: center; justify-content: center; }
+        .orion-logo-image { display: block; width: 36px; height: auto; object-fit: contain; filter: drop-shadow(0 0 6px rgba(0,229,255,0.4)); }
     </style>
 </head>
-<body class="bg-orionBg text-gray-100 min-h-screen flex flex-col pb-24 md:pb-8 transition-colors duration-300">
+<body class="bg-orionBg text-gray-200 min-h-screen flex flex-col pb-24 md:pb-8 transition-colors duration-300">
 
     <!-- Header Ejecutivo -->
-    <header class="bg-orionCard border-b border-blue-900/50 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-xl">
+    <header class="bg-orionCard border-b border-blue-950/60 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-2xl">
         <div class="flex items-center space-x-3">
-            <!-- Logo Vectorial Exacto según Manual de Identidad Orion -->
+            <!-- Logo Orion Vectorial Integrado en Azul Eléctrico -->
             <div class="w-10 h-10 flex items-center justify-center bg-orionBg border border-orionCian/30 rounded-xl shadow-inner">
-                <svg viewBox="0 0 100 100" class="w-7 h-7 text-orionCian fill-current">
-                    <path d="M50 2 C48 30 30 48 2 50 C30 52 48 70 50 98 C52 70 70 52 98 50 C70 48 52 30 50 2 Z"/>
-                    <path d="M50 25 C49 40 40 49 25 50 C40 51 49 60 50 75 C51 60 60 51 75 50 C60 49 51 40 50 25 Z" class="text-orionRoyal fill-current"/>
-                </svg>
+                <div class="orion-logo">
+                    <svg viewBox="0 0 100 100" class="orion-logo-image text-orionCian fill-current" style="width: 28px;">
+                        <path d="M50 2 C48 30 30 48 2 50 C30 52 48 70 50 98 C52 70 70 52 98 50 C70 48 52 30 50 2 Z"/>
+                        <path d="M50 25 C49 40 40 49 25 50 C40 51 49 60 50 75 C51 60 60 51 75 50 C60 49 51 40 50 25 Z" class="text-orionRoyal fill-current"/>
+                    </svg>
+                </div>
             </div>
             <div>
                 <h1 class="font-bold tracking-widest text-lg text-white flex items-center gap-2">
@@ -49,7 +55,7 @@
                 </h1>
                 <p class="text-xs text-gray-400 flex items-center gap-1.5">
                     <span class="inline-block w-2 h-2 rounded-full bg-orionCian animate-pulse"></span> 
-                    <span id="sync-text">Sincronización Local Activa</span>
+                    <span>Sincronización Local Activa</span>
                 </p>
             </div>
         </div>
@@ -71,37 +77,37 @@
 
         <!-- Tarjetas KPI / Resumen Ejecutivo -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-gray-300 font-medium">Ingresos Totales</p>
+            <div class="bg-orionCard border border-blue-950/50 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-400 font-medium">Ingresos Totales</p>
                 <h3 id="kpi-ingresos" class="text-xl md:text-2xl font-bold text-white mt-1">$0.00</h3>
                 <span class="text-[10px] text-emerald-400 mt-1 block"><i class="fa-solid fa-arrow-trend-up"></i> Registrados</span>
             </div>
-            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-gray-300 font-medium">Gastos / Deudas</p>
+            <div class="bg-orionCard border border-blue-950/50 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-400 font-medium">Gastos / Deudas</p>
                 <h3 id="kpi-gastos" class="text-xl md:text-2xl font-bold text-red-400 mt-1">$0.00</h3>
-                <span class="text-[10px] text-gray-300 mt-1 block"><i class="fa-solid fa-wallet"></i> Comprometido</span>
+                <span class="text-[10px] text-gray-400 mt-1 block"><i class="fa-solid fa-wallet"></i> Comprometido</span>
             </div>
-            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-gray-300 font-medium">Efectivo Libre</p>
+            <div class="bg-orionCard border border-blue-950/50 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-400 font-medium">Efectivo Libre</p>
                 <h3 id="kpi-libre" class="text-xl md:text-2xl font-bold text-orionCian mt-1">$0.00</h3>
                 <span class="text-[10px] text-orionCian/80 mt-1 block"><i class="fa-solid fa-scale-balanced"></i> Margen actual</span>
             </div>
-            <div class="bg-orionCard border border-blue-900/40 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-gray-300 font-medium">Salud Financiera</p>
-                <h3 id="kpi-salud" class="text-lg md:text-xl font-bold text-gray-300 mt-1">Sin datos</h3>
-                <span id="kpi-salud-desc" class="text-[10px] text-gray-300 mt-1 block">Agrega movimientos</span>
+            <div class="bg-orionCard border border-blue-950/50 p-4 rounded-xl shadow-lg">
+                <p class="text-xs text-gray-400 font-medium">Salud Financiera</p>
+                <h3 id="kpi-salud" class="text-lg md:text-xl font-bold text-gray-400 mt-1">Sin datos</h3>
+                <span id="kpi-salud-desc" class="text-[10px] text-gray-400 mt-1 block">Agrega movimientos</span>
             </div>
         </div>
 
         <!-- Pestañas de Navegación del Plazo -->
-        <div class="flex border-b border-blue-900/50 overflow-x-auto custom-scrollbar">
+        <div class="flex border-b border-blue-950/60 overflow-x-auto custom-scrollbar">
             <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-5 py-3 text-sm font-semibold border-b-2 border-orionCian text-orionCian whitespace-nowrap transition">
                 <i class="fa-solid fa-chart-pie mr-2"></i> Dashboard General
             </button>
-            <button onclick="switchTab('quincena1')" id="tab-btn-quincena1" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-300 hover:text-white whitespace-nowrap transition">
+            <button onclick="switchTab('quincena1')" id="tab-btn-quincena1" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white whitespace-nowrap transition">
                 <i class="fa-solid fa-calendar-day mr-2"></i> Del 01 al 15
             </button>
-            <button onclick="switchTab('quincena2')" id="tab-btn-quincena2" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-300 hover:text-white whitespace-nowrap transition">
+            <button onclick="switchTab('quincena2')" id="tab-btn-quincena2" class="px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white whitespace-nowrap transition">
                 <i class="fa-solid fa-calendar-days mr-2"></i> Del 16 al 30/31
             </button>
         </div>
@@ -110,21 +116,21 @@
         <div id="tab-dashboard" class="space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Gráfica de Distribución -->
-                <div class="bg-orionCard border border-blue-900/40 p-5 rounded-2xl shadow-lg">
-                    <h3 class="text-sm font-bold tracking-wider text-gray-200 uppercase mb-4"><i class="fa-solid fa-chart-pie text-orionCian mr-2"></i> Distribución de Gastos</h3>
+                <div class="bg-orionCard border border-blue-950/50 p-5 rounded-2xl shadow-lg">
+                    <h3 class="text-sm font-bold tracking-wider text-gray-300 uppercase mb-4"><i class="fa-solid fa-chart-pie text-orionCian mr-2"></i> Distribución de Gastos</h3>
                     <div class="relative h-64 flex items-center justify-center">
                         <canvas id="expenseChart"></canvas>
                     </div>
                 </div>
                 <!-- Diagnóstico Ejecutivo -->
-                <div class="bg-orionCard border border-blue-900/40 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
+                <div class="bg-orionCard border border-blue-950/50 p-5 rounded-2xl shadow-lg flex flex-col justify-between">
                     <div>
-                        <h3 class="text-sm font-bold tracking-wider text-gray-200 uppercase mb-4"><i class="fa-solid fa-shield-halved text-orionCian mr-2"></i> Diagnóstico de Liquidez</h3>
-                        <div id="executive-summary-text" class="space-y-3 text-sm text-gray-300">
+                        <h3 class="text-sm font-bold tracking-wider text-gray-300 uppercase mb-4"><i class="fa-solid fa-shield-halved text-orionCian mr-2"></i> Diagnóstico de Liquidez</h3>
+                        <div id="executive-summary-text" class="space-y-3 text-sm text-gray-400">
                             <p>Sin registros para analizar. Agrega ingresos y gastos en las pestañas de plazos.</p>
                         </div>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-blue-900/40 flex justify-between items-center text-xs text-gray-400">
+                    <div class="mt-6 pt-4 border-t border-blue-950/40 flex justify-between items-center text-xs text-gray-500">
                         <span>Estrategia: Cero Fugas</span>
                         <span class="text-orionCian font-semibold">Orion Protocol</span>
                     </div>
@@ -141,10 +147,10 @@
                 </button>
             </div>
             <!-- Tabla -->
-            <div class="bg-orionCard border border-blue-900/40 rounded-xl overflow-hidden shadow-lg">
+            <div class="bg-orionCard border border-blue-950/50 rounded-xl overflow-hidden shadow-lg">
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-orionBg/80 text-gray-300 border-b border-blue-900/40 text-xs uppercase">
+                        <thead class="bg-orionBg/70 text-gray-400 border-b border-blue-950/50 text-xs uppercase">
                             <tr>
                                 <th class="p-3">Estado</th>
                                 <th class="p-3">Concepto</th>
@@ -154,7 +160,7 @@
                                 <th class="p-3 text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="table-q1" class="divide-y divide-blue-900/30">
+                        <tbody id="table-q1" class="divide-y divide-blue-950/30">
                             <!-- Dinámico -->
                         </tbody>
                     </table>
@@ -171,10 +177,10 @@
                 </button>
             </div>
             <!-- Tabla -->
-            <div class="bg-orionCard border border-blue-900/40 rounded-xl overflow-hidden shadow-lg">
+            <div class="bg-orionCard border border-blue-950/50 rounded-xl overflow-hidden shadow-lg">
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-orionBg/80 text-gray-300 border-b border-blue-900/40 text-xs uppercase">
+                        <thead class="bg-orionBg/70 text-gray-400 border-b border-blue-950/50 text-xs uppercase">
                             <tr>
                                 <th class="p-3">Estado</th>
                                 <th class="p-3">Concepto</th>
@@ -184,7 +190,7 @@
                                 <th class="p-3 text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="table-q2" class="divide-y divide-blue-900/30">
+                        <tbody id="table-q2" class="divide-y divide-blue-950/30">
                             <!-- Dinámico -->
                         </tbody>
                     </table>
@@ -195,7 +201,7 @@
     </main>
 
     <!-- Barra de Navegación Móvil Inferior -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-orionCard border-t border-blue-900/50 px-4 py-3 flex justify-around items-center z-50 shadow-2xl">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-orionCard border-t border-blue-950/60 px-4 py-3 flex justify-around items-center z-50 shadow-2xl">
         <button onclick="switchTab('dashboard')" id="mob-btn-dashboard" class="flex flex-col items-center text-orionCian text-xs font-medium">
             <i class="fa-solid fa-chart-pie text-base mb-1"></i> Dashboard
         </button>
@@ -211,36 +217,36 @@
     </nav>
 
     <!-- Modal para Nuevo Movimiento -->
-    <div id="movementModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-orionCard border border-blue-900/60 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-blue-900/40 pb-3">
+    <div id="movementModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-orionCard border border-blue-950/80 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-blue-950/50 pb-3">
                 <h3 class="font-bold text-white text-base">Registrar Nuevo Movimiento</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="movementForm" onsubmit="saveMovement(event)" class="space-y-4 text-sm">
                 <input type="hidden" id="form-periodo" value="q1">
                 <div>
-                    <label class="block text-gray-300 text-xs mb-1">Plazo</label>
-                    <select id="input-periodo" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
+                    <label class="block text-gray-400 text-xs mb-1">Plazo</label>
+                    <select id="input-periodo" class="w-full bg-orionBg border border-blue-950/60 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                         <option value="q1">Del 01 al 15</option>
                         <option value="q2">Del 16 al 30/31</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-gray-300 text-xs mb-1">Tipo</label>
-                    <select id="input-tipo" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
+                    <label class="block text-gray-400 text-xs mb-1">Tipo</label>
+                    <select id="input-tipo" class="w-full bg-orionBg border border-blue-950/60 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                         <option value="ingreso">Ingreso (Sueldo / Extra)</option>
                         <option value="gasto">Gasto / Deuda</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-gray-300 text-xs mb-1">Concepto</label>
-                    <input type="text" id="input-concepto" required placeholder="Ej. Nómina, Renta, Préstamo..." class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
+                    <label class="block text-gray-400 text-xs mb-1">Concepto</label>
+                    <input type="text" id="input-concepto" required placeholder="Ej. Nómina, Renta, Préstamo..." class="w-full bg-orionBg border border-blue-950/60 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-gray-300 text-xs mb-1">Categoría</label>
-                        <select id="input-categoria" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
+                        <label class="block text-gray-400 text-xs mb-1">Categoría</label>
+                        <select id="input-categoria" class="w-full bg-orionBg border border-blue-950/60 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                             <option value="Nómina">Nómina</option>
                             <option value="Deudas">Deudas</option>
                             <option value="Vivienda/Servicios">Vivienda/Servicios</option>
@@ -249,12 +255,12 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-gray-300 text-xs mb-1">Monto ($)</label>
-                        <input type="number" step="0.01" id="input-monto" required placeholder="0.00" class="w-full bg-orionBg border border-blue-900/50 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
+                        <label class="block text-gray-400 text-xs mb-1">Monto ($)</label>
+                        <input type="number" step="0.01" id="input-monto" required placeholder="0.00" class="w-full bg-orionBg border border-blue-950/60 rounded-lg p-2.5 text-white focus:border-orionCian outline-none">
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-blue-950 text-gray-300 hover:bg-blue-900">Cancelar</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-blue-950 text-gray-400 hover:bg-blue-900">Cancelar</button>
                     <button type="submit" class="px-4 py-2 rounded-lg bg-orionCian text-orionBg font-semibold hover:bg-cyan-400">Guardar Registro</button>
                 </div>
             </form>
@@ -308,7 +314,7 @@
                 <style>
                     body { font-family: Arial, sans-serif; color: #111; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.5; }
                     .header { border-bottom: 2px solid #00E5FF; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-                    .title { font-size: 22px; font-weight: bold; color: #0A1E4D; letter-spacing: 2px; }
+                    .title { font-size: 22px; font-weight: bold; color: #050B14; letter-spacing: 2px; }
                     .subtitle { font-size: 12px; color: #555; }
                     .kpi-container { display: flex; gap: 15px; margin-bottom: 25px; }
                     .kpi-card { background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; flex: 1; text-align: center; }
@@ -316,7 +322,7 @@
                     .kpi-value { font-size: 18px; font-weight: bold; margin-top: 5px; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
                     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-                    th { background-color: #0A1E4D; color: #fff; font-size: 11px; text-transform: uppercase; }
+                    th { background-color: #050B14; color: #fff; font-size: 11px; text-transform: uppercase; }
                     .text-right { text-align: right; }
                     .badge-ingreso { color: #059669; font-weight: bold; }
                     .badge-gasto { color: #dc2626; font-weight: bold; }
@@ -441,7 +447,7 @@
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if(btn) {
                     btn.classList.remove('border-orionCian', 'text-orionCian');
-                    btn.classList.add('border-transparent', 'text-gray-300');
+                    btn.classList.add('border-transparent', 'text-gray-400');
                 }
                 const mobBtn = document.getElementById(`mob-btn-${t}`);
                 if(mobBtn) mobBtn.classList.replace('text-orionCian', 'text-gray-400');
@@ -451,7 +457,7 @@
             const activeBtn = document.getElementById(`tab-btn-${tab}`);
             if(activeBtn) {
                 activeBtn.classList.add('border-orionCian', 'text-orionCian');
-                activeBtn.classList.remove('border-transparent', 'text-gray-300');
+                activeBtn.classList.remove('border-transparent', 'text-gray-400');
             }
             const activeMob = document.getElementById(`mob-btn-${tab}`);
             if(activeMob) activeMob.classList.replace('text-gray-400', 'text-orionCian');
@@ -504,17 +510,17 @@
                 tbody.innerHTML = '';
 
                 if (db[p].length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 text-xs">Sin registros agregados en este plazo.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500 text-xs">Sin registros agregados en este plazo.</td></tr>`;
                 } else {
                     db[p].forEach(item => {
                         const tr = document.createElement('tr');
-                        tr.className = "hover:bg-blue-900/20 transition";
+                        tr.className = "hover:bg-blue-950/40 transition";
                         tr.innerHTML = `
                             <td class="p-3">
                                 <input type="checkbox" ${item.pagado ? 'checked' : ''} onchange="togglePagado('${p}', ${item.id})" class="w-4 h-4 accent-orionCian rounded cursor-pointer">
                             </td>
                             <td class="p-3 font-medium text-white">${item.concepto}</td>
-                            <td class="p-3 text-gray-300 text-xs">${item.categoria}</td>
+                            <td class="p-3 text-gray-400 text-xs">${item.categoria}</td>
                             <td class="p-3">
                                 <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${item.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
                                     ${item.tipo.toUpperCase()}
@@ -524,7 +530,7 @@
                                 $${item.monto.toLocaleString('es-MX', {minimumFractionDigits: 2})}
                             </td>
                             <td class="p-3 text-center">
-                                <button onclick="deleteItem('${p}', ${item.id})" class="text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                                <button onclick="deleteItem('${p}', ${item.id})" class="text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -551,7 +557,7 @@
 
             if (totalIngresos === 0 && totalGastos === 0) {
                 saludEl.innerText = "Sin datos";
-                saludEl.className = "text-lg md:text-xl font-bold text-gray-400 mt-1";
+                saludEl.className = "text-lg md:text-xl font-bold text-gray-500 mt-1";
                 saludDesc.innerText = "Agrega movimientos";
             } else if(efectivoLibre > 5000) {
                 saludEl.innerText = "Óptima";
@@ -599,7 +605,7 @@
                     labels: labels.length ? labels : ['Sin Gastos'],
                     datasets: [{
                         data: data.length ? data : [1],
-                        backgroundColor: data.length ? ['#00E5FF', '#135BFF', '#3b82f6', '#ef4444', '#8b5cf6', '#6b7280'] : ['#0f2966'],
+                        backgroundColor: data.length ? ['#00E5FF', '#135BFF', '#3b82f6', '#ef4444', '#8b5cf6', '#6b7280'] : ['#0A1222'],
                         borderWidth: 0
                     }]
                 },
